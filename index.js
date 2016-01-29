@@ -11,4 +11,5 @@ exports.commands = [
   require('./commands/orgs'),
   require('./commands/orgs/open'),
   require('./commands/apps/join')
+  require('./commands/apps/leave')
 ];
