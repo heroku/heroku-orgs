@@ -10,12 +10,14 @@ function* run (context, heroku) {
   if (context.flags.role) members = members.filter(m => m.role === context.flags.role);
   if (context.flags.json) {
     cli.log(JSON.stringify(members, null, 2));
+  } else if (members.length === 0) {
+    cli.log(`No members in ${cli.color.magenta(context.org)} with role ${cli.color.green(context.flags.role)}`);
   } else {
     cli.table(members, {
       printHeader: false,
       columns: [
-        {key: 'email'},
-        {key: 'role'},
+        {key: 'email', format: e => cli.color.cyan(e)},
+        {key: 'role',  format: r => cli.color.green(r)},
       ]
     });
   }
