@@ -8,4 +8,5 @@ exports.commands = [
   require('./commands/access/remove'),
   require('./commands/access/update'),
   require('./commands/apps/join'),
+  require('./commands/apps/leave'),
 ];
