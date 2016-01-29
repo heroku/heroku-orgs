@@ -10,4 +10,5 @@ exports.commands = [
   require('./commands/access/update'),
   require('./commands/orgs'),
   require('./commands/orgs/open'),
+  require('./commands/apps/join')
 ];
