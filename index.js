@@ -8,4 +8,5 @@ exports.commands = [
   require('./commands/access/remove'),
   require('./commands/access/update'),
   require('./commands/orgs'),
+  require('./commands/orgs/open'),
 ];
