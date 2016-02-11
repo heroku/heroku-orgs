@@ -13,8 +13,9 @@ function print (orgs) {
   cli.table(orgs, {
     columns: [
       {key: 'name', label: 'Organization', format: o => cli.color.green(o)},
-      {key: 'role', label: 'Role'},
-    ]
+      {key: 'role', label: 'Role', format: r => r === 'viewer' ?  'member': r},
+    ],
+    printHeader: false
   });
 }
 
