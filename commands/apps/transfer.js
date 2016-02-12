@@ -1,8 +1,9 @@
 'use strict';
 
-let cli    = require('heroku-cli-util');
-let co     = require('co');
-let extend = require('util')._extend;
+let cli         = require('heroku-cli-util');
+let co          = require('co');
+let extend      = require('util')._extend;
+let lock        = require('./lock.js');
 
 function* run (context, heroku) {
   let app    = context.app;
@@ -15,6 +16,10 @@ function* run (context, heroku) {
   });
 
   yield cli.action(`Transferring ${cli.color.cyan(app)} to ${cli.color.magenta(recipient)}`, request);
+
+  if (context.flags.locked) {
+    lock.run(context);
+  }
 }
 
 let cmd = {
@@ -25,13 +30,16 @@ let cmd = {
   needsApp:     true,
   run:          cli.command(co.wrap(run)),
   args:         [{name: 'recipient', description: 'user or org to transfer app to'}],
+  flags: [
+    {name: 'locked', char: 'l', hasValue: false, required: false, description: 'lock the app upon transfer'},
+  ],
   help: `
 Examples:
 
-  $ heroku sharing:transfer collaborator@example.com
+  $ heroku apps:transfer collaborator@example.com
   Transferring example to collaborator@example.com... done
 
-  $ heroku sharing:transfer acme-widgets
+  $ heroku apps:transfer acme-widgets
   Transferring example to acme-widgets... done
   `,
 };
