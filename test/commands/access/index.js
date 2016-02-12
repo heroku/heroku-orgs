@@ -20,9 +20,7 @@ describe('heroku access', () => {
       ]);
       return cmd.run({app: 'myapp', flags: {}})
       .then(() => expect(
-`Email            Role
-───────────────  ────────────
-bob@heroku.com   collaborator
+`bob@heroku.com   collaborator
 jeff@heroku.com  owner
 `).to.eq(cli.stdout))
       .then(() => expect(``).to.eq(cli.stderr))
