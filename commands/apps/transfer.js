@@ -18,7 +18,7 @@ function* run (context, heroku) {
   yield cli.action(`Transferring ${cli.color.cyan(app)} to ${cli.color.magenta(recipient)}`, request);
 
   if (context.flags.locked) {
-    lock.run(context);
+    yield lock.run(context);
   }
 }
 
