@@ -14,7 +14,7 @@ function printAccess (app, collaborators) {
   let showPrivileges = Utils.isOrgApp(app.owner.email) && (orgFlags.indexOf('org-access-controls') !== -1);
   collaborators = _.chain(collaborators)
   .sortBy(c => c.email || c.user.email)
-  .reject(c => /herokumanager\.com$/.test(c.email))
+  .reject(c => /herokumanager\.com$/.test(c.user.email))
   .map(collab => {
     let email = collab.user.email;
     let role = Utils.roleName(collab.role);
@@ -51,7 +51,7 @@ function* run (context, heroku) {
     let orgInfo = yield heroku.request({
       method: 'GET',
       path: `/v1/organization/${orgName}`,
-      headers: { 'accept': 'application/vnd.heroku+json; version=2' }
+      headers: { Accept: 'application/vnd.heroku+json; version=2' }
     });
 
     orgFlags = orgInfo.flags;
@@ -63,7 +63,7 @@ function* run (context, heroku) {
         let adminPrivileges = yield heroku.request({
           method: 'GET',
           path: '/organizations/privileges',
-          headers: { 'accept': 'application/vnd.heroku+json; version=3.org-privileges' }
+          headers: { Accept: 'application/vnd.heroku+json; version=3.org-privileges' }
         });
 
         admins = _.forEach(admins, function(admin) {
@@ -72,7 +72,7 @@ function* run (context, heroku) {
           return admin;
         });
 
-        collaborators = _.reject(collaborators, { 'role': 'admin'}); // Admins might have already privileges
+        collaborators = _.reject(collaborators, { role: 'admin'}); // Admins might have already privileges
         collaborators = _.union(collaborators, admins);
       } catch (err) {
         if (err.statusCode !== 403) throw err;
