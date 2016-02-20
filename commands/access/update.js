@@ -9,20 +9,19 @@ function* run (context, heroku) {
   let privileges  = context.flags.privileges;
   let appInfo = yield heroku.apps(appName).info();
 
-  if (Utils.isOrgApp(appInfo.owner.email) && privileges) {
-    let request = heroku.request({
-      method: 'PATCH',
-      path: `/organizations/apps/${appName}/collaborators/${context.args.email}`,
-      headers: {
-        'accept': 'application/vnd.heroku+json; version=3.org-privileges',
-      },
-      body: {
-        privileges: privileges.split(",")
-      }
-    });
+  if (!Utils.isOrgApp(appInfo.owner.email)) throw new Error(`Error: cannot update privileges. The app ${cli.color.cyan(appName)} is not owned by an organization`);
 
-    yield cli.action(`Updating ${context.args.email} in application ${appName} with ${privileges} privileges... done`, request);
-  }
+  let request = heroku.request({
+    method: 'PATCH',
+    path: `/organizations/apps/${appName}/collaborators/${context.args.email}`,
+    headers: {
+      Accept: 'application/vnd.heroku+json; version=3.org-privileges',
+    },
+    body: {
+      privileges: privileges.split(",")
+    }
+  });
+  yield cli.action(`Updating ${context.args.email} in application ${appName} with ${privileges} privileges`, request);
 }
 
 module.exports = {
@@ -30,7 +29,7 @@ module.exports = {
   needsAuth: true,
   needsApp: true,
   command: 'update',
-  description: 'Update existing collaborators in an app',
+  description: 'Update existing collaborators in an org app',
   help: 'heroku access:update user@email.com --app APP --privileges deploy,manage,operate,view',
   args:  [{name: 'email', optional: false}],
   flags: [
