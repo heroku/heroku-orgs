@@ -2,7 +2,8 @@
 
 let cmd           = require('../../../commands/access/update');
 let error         = require('../../../lib/error');
-let assert_exit   = require('../../assert_exit.js');
+let assert_exit   = require('../../assert_exit');
+let unwrap        = require('../../unwrap');
 
 describe('heroku access:update', () => {
   context('with an org app with privileges', () => {
@@ -51,7 +52,7 @@ describe('heroku access:update', () => {
         args: {email: 'raulb@heroku.com'},
         flags: { privileges: 'view,deploy' }
       }).then(() => api.done())).then(function() {
-        expect(cli.stderr).to.equal(` ▸    Error: cannot update privileges. The app myapp is not owned by an organization\n`);
+        expect(unwrap(cli.stderr)).to.equal(` ▸    Error: cannot update privileges. The app myapp is not owned by an organization\n`);
       });
     });
   });
