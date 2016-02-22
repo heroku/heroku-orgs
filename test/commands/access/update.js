@@ -1,6 +1,8 @@
 'use strict';
 
-let cmd = require('../../../commands/access/update');
+let cmd           = require('../../../commands/access/update');
+let error         = require('../../../lib/error');
+let assert_exit   = require('../../assert_exit.js');
 
 describe('heroku access:update', () => {
   context('with an org app with privileges', () => {
@@ -31,13 +33,10 @@ describe('heroku access:update', () => {
 
   context('with a non org app', () => {
     beforeEach(() => {
-      cli.raiseErrors = false;
       cli.mockConsole();
+      error.exit.mock();
     });
-    afterEach(()  => {
-      cli.raiseErrors = true;
-      nock.cleanAll();
-    });
+    afterEach(()  => nock.cleanAll());
 
     it('returns an error when passing privileges', () => {
       let api = nock('https://api.heroku.com:443')
@@ -46,9 +45,14 @@ describe('heroku access:update', () => {
         name: 'myapp',
         owner: { email: 'raulb@heroku.com' }
       });
-      return cmd.run({app: 'myapp', args: {email: 'raulb@heroku.com'}, flags: { privileges: 'view,deploy' }})
-      .then(() => expect(` ▸    Error: cannot update privileges. The app myapp is not owned by an organization\n`).to.eq(cli.stderr))
-      .then(() => api.done());
+
+      return assert_exit(1, cmd.run({
+        app: 'myapp',
+        args: {email: 'raulb@heroku.com'},
+        flags: { privileges: 'view,deploy' }
+      })).then(function() {
+        expect(cli.stderr).to.equal(` ▸    Error: cannot update privileges. The app myapp is not owned by an organization\n`);
+      });
     });
   });
 });

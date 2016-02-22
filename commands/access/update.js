@@ -1,15 +1,16 @@
 'use strict';
 
-let cli       = require('heroku-cli-util');
-let Utils     = require('../../lib/utils');
-let co        = require('co');
+let cli           = require('heroku-cli-util');
+let Utils         = require('../../lib/utils');
+let error         = require('../../lib/error');
+let co            = require('co');
 
 function* run (context, heroku) {
   let appName     = context.app;
   let privileges  = context.flags.privileges;
   let appInfo = yield heroku.apps(appName).info();
 
-  if (!Utils.isOrgApp(appInfo.owner.email)) throw new Error(`Error: cannot update privileges. The app ${cli.color.cyan(appName)} is not owned by an organization`);
+  if (!Utils.isOrgApp(appInfo.owner.email)) error.exit(1, `Error: cannot update privileges. The app ${cli.color.cyan(appName)} is not owned by an organization`);
 
   let request = heroku.request({
     method: 'PATCH',
