@@ -50,7 +50,7 @@ describe('heroku access:update', () => {
         app: 'myapp',
         args: {email: 'raulb@heroku.com'},
         flags: { privileges: 'view,deploy' }
-      })).then(function() {
+      }).then(() => api.done())).then(function() {
         expect(cli.stderr).to.equal(` ▸    Error: cannot update privileges. The app myapp is not owned by an organization\n`);
       });
     });
