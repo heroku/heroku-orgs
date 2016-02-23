@@ -3,15 +3,28 @@
 let cli           = require('heroku-cli-util');
 let Utils         = require('../../lib/utils');
 let co            = require('co');
+let error         = require('../../lib/error');
 
 function* run(context, heroku) {
   let appName = context.app;
-  let privileges = context.flags.privileges || 'view'; // Defaults to view only
+  let privileges = context.flags.privileges || "";
   let appInfo = yield heroku.apps(appName).info();
   let output = `Adding ${cli.color.cyan(context.args.email)} access to the app ${cli.color.magenta(appName)}`;
   let request;
 
   if (Utils.isOrgApp(appInfo.owner.email)) {
+    let orgName = Utils.getOwner(appInfo.owner.email);
+    let orgInfo = yield heroku.request({
+      method: 'GET',
+      path: `/v1/organization/${orgName}`,
+      headers: { Accept: 'application/vnd.heroku+json; version=2' }
+    });
+
+    if (orgInfo.flags.indexOf('org-access-controls') !== -1) {
+      output += ` with ${cli.color.green(privileges)} privileges`;
+      if (!privileges) error.exit(1, `Missing argument: privileges`);
+    }
+
     request = heroku.request({
       method: 'POST',
       path: `/organizations/apps/${appName}/collaborators`,
@@ -23,17 +36,8 @@ function* run(context, heroku) {
         privileges: privileges.split(",")
       }
     });
-
-    let orgName = Utils.getOwner(appInfo.owner.email);
-    let orgInfo = yield heroku.request({
-      method: 'GET',
-      path: `/v1/organization/${orgName}`,
-      headers: { Accept: 'application/vnd.heroku+json; version=2' }
-    });
-    if (orgInfo.flags.indexOf('org-access-controls') !== -1) { output += ` with ${cli.color.green(privileges)} privileges`; }
-
   } else {
-    request = yield heroku.apps(appName).collaborators().create({ user: context.args.email });
+    request = heroku.apps(appName).collaborators().create({ user: context.args.email });
   }
   yield cli.action(`${output}`, request);
 }
