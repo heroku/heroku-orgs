@@ -1,6 +1,7 @@
 'use strict';
 
 let cmd     = require('../../../commands/orgs/default');
+let unwrap  = require('../../unwrap');
 
 describe('heroku orgs:default', () => {
   beforeEach(() =>  cli.mockConsole());
@@ -11,9 +12,7 @@ describe('heroku orgs:default', () => {
     .then(() => expect(
 ``).to.eq(cli.stdout))
       .then(() => expect(
-` ▸    orgs:default is no longer in the CLI.
- ▸    Use the HEROKU_ORGANIZATION environment variable instead.
- ▸    See https://devcenter.heroku.com/articles/develop-orgs#default-org for more info.
-`).to.eq(cli.stderr));
+` ▸    orgs:default is no longer in the CLI. Use the HEROKU_ORGANIZATION environment variable instead. See https://devcenter.heroku.com/articles/develop-orgs#default-org for more info.
+`).to.eq(unwrap(cli.stderr)));
   });
 });
