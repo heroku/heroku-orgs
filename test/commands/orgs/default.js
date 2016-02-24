@@ -1,14 +1,9 @@
 'use strict';
 
 let cmd     = require('../../../commands/orgs/default');
-let error   = require('../../../lib/error');
 
 describe('heroku orgs:default', () => {
-  beforeEach(() => {
-    cli.mockConsole();
-    error.exit.mock();
-  });
-
+  beforeEach(() =>  cli.mockConsole());
   afterEach(()  => nock.cleanAll());
 
   it('shows a deprecation message', () => {
