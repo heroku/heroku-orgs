@@ -56,7 +56,7 @@ function* run (context, heroku) {
     });
 
     orgFlags = orgInfo.flags;
-    if (orgFlags.indexOf('org-access-controls') !== -1) {
+    if ((orgFlags.indexOf('org-access-controls') !== -1) || (orgFlags.indexOf('static-permissions') !== -1)) {
       try {
         let admins = yield heroku.get(`/organizations/${orgName}/members`);
         admins = _.filter(admins, { 'role': 'admin' });
