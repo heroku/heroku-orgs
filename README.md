@@ -3,9 +3,24 @@ Heroku Orgs CLI
 [![npm version](https://badge.fury.io/js/heroku-orgs.svg)](http://badge.fury.io/js/heroku-orgs)
 [![Build Status](https://travis-ci.org/heroku/heroku-orgs.svg?branch=master)](https://travis-ci.org/heroku/heroku-orgs)
 
-[Dev Center: Developing CLI Plugins](https://devcenter.heroku.com/articles/developing-toolbelt-plug-ins)
 
-### Commands
+### Development
+
+First, please read [Developing CLI Plugins on Heroku's DevCenter](https://devcenter.heroku.com/articles/developing-toolbelt-plug-ins).
+
+#### Run Tests
+
+```
+$ npm test
+```
+
+#### Deploy
+
+```
+$ npm publish patch
+```
+
+### Usage
 
 ```bash
 $ heroku orgs
