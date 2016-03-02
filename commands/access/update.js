@@ -1,9 +1,10 @@
 'use strict';
 
-let cli           = require('heroku-cli-util');
-let Utils         = require('../../lib/utils');
-let error         = require('../../lib/error');
-let co            = require('co');
+let cli   = require('heroku-cli-util');
+let _     = require('lodash');
+let Utils = require('../../lib/utils');
+let error = require('../../lib/error');
+let co    = require('co');
 
 function* run (context, heroku) {
   let appName     = context.app;
@@ -14,7 +15,7 @@ function* run (context, heroku) {
 
   // Give implicit `view` access
   privileges.push('view');
-  privileges = privileges.sort();
+  privileges = _.uniq(privileges.sort());
 
   let request = heroku.request({
     method: 'PATCH',

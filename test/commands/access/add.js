@@ -29,6 +29,15 @@ describe('heroku access:add', () => {
         .then(() => apiPrivilegesVariant.done());
     });
 
+    it('adds user to the app with privileges, even specifying the view privilege', () => {
+      return cmd.run({app: 'myapp', args: {email: 'raulb@heroku.com'}, flags: { privileges: 'deploy,view' }})
+      .then(() => expect(``).to.eq(cli.stdout))
+        .then(() => expect(`Adding raulb@heroku.com access to the app myapp with deploy,view privileges... done\n`).to.eq(cli.stderr))
+        .then(() => api.done())
+        .then(() => apiV2.done())
+        .then(() => apiPrivilegesVariant.done());
+    });
+
     it('raises an error when privileges are not specified', () => {
       error.exit.mock();
 
