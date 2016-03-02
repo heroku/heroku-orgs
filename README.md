@@ -4,22 +4,6 @@ Heroku Orgs CLI
 [![Build Status](https://travis-ci.org/heroku/heroku-orgs.svg?branch=master)](https://travis-ci.org/heroku/heroku-orgs)
 
 
-### Development
-
-First, please read [Developing CLI Plugins on Heroku's DevCenter](https://devcenter.heroku.com/articles/developing-toolbelt-plug-ins).
-
-#### Run Tests
-
-```
-$ npm test
-```
-
-#### Deploy
-
-```
-$ npm publish patch
-```
-
 ### Usage
 
 ```bash
@@ -194,3 +178,20 @@ Remove users from your app
 
 heroku access:remove user@email.com --app APP
 ```
+
+### Development
+
+First, please read [Developing CLI Plugins on Heroku's DevCenter](https://devcenter.heroku.com/articles/developing-toolbelt-plug-ins).
+
+#### Run Tests
+
+```
+$ npm test
+```
+
+#### Deploy
+
+```
+$ npm publish patch
+```
+
