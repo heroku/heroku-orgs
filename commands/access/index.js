@@ -8,7 +8,7 @@ let co        = require('co');
 let orgFlags;
 
 function orgHasGranularPermissions(orgFlags) {
-  return ((orgFlags.indexOf('org-access-controls') !== -1) || (orgFlags.indexOf('static-permissions') !== -1));
+  return _.includes(orgFlags, 'org-access-controls') || _.includes(orgFlags, 'static-permissions');
 }
 function printJSON (collaborators) {
   cli.log(JSON.stringify(collaborators, null, 2));
