@@ -1,7 +1,11 @@
 exports.topics = [
   {name: 'access', description: 'CLI to manage access in Heroku Applications'},
   {name: 'orgs',   description: 'manage organizations'},
-  {name: 'sharing', hidden: true}
+  {name: 'sharing', hidden: true},
+  {name: 'join', hidden: true},
+  {name: 'leave', hidden: true},
+  {name: 'lock', hidden: true},
+  {name: 'unlock', hidden: true}
 ];
 
 exports.commands = [
