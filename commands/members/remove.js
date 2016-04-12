@@ -17,7 +17,7 @@ function* run (context, heroku) {
 module.exports = {
   topic:        'members',
   command:      'remove',
-  description:  'removes a user from an organization',
+  description:  'removes a user from an organization or a team',
   needsAuth:    true,
   needsOrg:     true,
   args:         [{name: 'email'}],

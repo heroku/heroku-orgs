@@ -20,7 +20,7 @@ function* run (context, heroku) {
 let cmd = {
   topic:        'members',
   command:      'add',
-  description:  'adds a user to an organization',
+  description:  'adds a user to an organization or a team',
   needsAuth:    true,
   needsOrg:     true,
   args:         [{name: 'email'}],
@@ -34,4 +34,4 @@ let cmd = {
 module.exports.add = cmd;
 module.exports.set = extend({}, cmd);
 module.exports.set.command = 'set';
-module.exports.set.description = 'sets a members role in an organization';
+module.exports.set.description = 'sets a members role in an organization or in a team';

@@ -11,11 +11,11 @@ function printJSON (orgs) {
 
 function print (orgs) {
   // Here we're filtering by these fields, though ideally we should filter by their flags
-  orgs = _.sortBy(_.filter(orgs, { "provisioned_licenses": true, "credit_card_collections": false }), 'name');
+  orgs = _.sortBy(_.filter(orgs, { "provisioned_licenses": false, "credit_card_collections": true }), 'name');
 
   cli.table(orgs, {
     columns: [
-      {key: 'name', label: 'Organization', format: o => cli.color.green(o)},
+      {key: 'name', label: 'Team', format: o => cli.color.green(o)},
       {key: 'role', label: 'Role', format: r => Utils.roleName(r)},
     ]
   });
@@ -28,8 +28,8 @@ function* run (context, heroku) {
 }
 
 module.exports = {
-  topic:        'orgs',
-  description:  'list the organizations that you are a member of',
+  topic:        'teams',
+  description:  'list the teams that you are a member of',
   needsAuth:    true,
   flags: [
     {name: 'json', description: 'output in json format'},

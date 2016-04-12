@@ -16,9 +16,6 @@ exports.commands = [
   require('./commands/access/remove'),
   require('./commands/access/remove').sharing,
   require('./commands/access/update'),
-  require('./commands/orgs'),
-  require('./commands/orgs/default'),
-  require('./commands/orgs/open'),
   require('./commands/apps/join').apps,
   require('./commands/apps/join').root,
   require('./commands/apps/leave').apps,
@@ -27,10 +24,14 @@ exports.commands = [
   require('./commands/apps/lock').root,
   require('./commands/apps/unlock').apps,
   require('./commands/apps/unlock').root,
+  require('./commands/apps/transfer'),
+  require('./commands/apps/transfer').sharing,
   require('./commands/members'),
   require('./commands/members/add').add,
   require('./commands/members/add').set,
   require('./commands/members/remove'),
-  require('./commands/apps/transfer'),
-  require('./commands/apps/transfer').sharing
+  require('./commands/orgs'),
+  require('./commands/orgs/default'),
+  require('./commands/orgs/open'),
+  require('./commands/teams')
 ];
