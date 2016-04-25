@@ -11,7 +11,9 @@ function* run (context, heroku) {
   let role  = context.flags.role;
   let members = yield heroku.get(`/organizations/${org}/members`);
   let features = yield heroku.get('/account/features');
-  let orgCreationFeature = features.find(function(feature) { return feature.name === 'standard-org-creation'});
+  let orgCreationFeature = features.find(function(feature) {
+    return feature.name === 'standard-org-creation';
+  });
 
   let request = heroku.request({
     method: 'PUT',
