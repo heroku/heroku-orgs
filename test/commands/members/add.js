@@ -38,7 +38,7 @@ describe('heroku members:add', () => {
     });
 
     it('does not warn the user when over the free org limit', () => {
-      stubGet.variableSizeOrgMembers(6);
+      stubGet.variableSizeOrgMembers(7);
       let api = nock('https://api.heroku.com:443')
       .put('/organizations/myorg/members', {email: 'foo@foo.com', role: 'admin'})
       .reply(200);
@@ -50,7 +50,7 @@ describe('heroku members:add', () => {
     });
 
     it('does warn the user when at the free org limit', () => {
-      stubGet.variableSizeOrgMembers(5);
+      stubGet.variableSizeOrgMembers(6);
       let api = nock('https://api.heroku.com:443')
       .put('/organizations/myorg/members', {email: 'foo@foo.com', role: 'admin'})
       .reply(200);
