@@ -5,6 +5,8 @@ let co     = require('co');
 let extend = require('util')._extend;
 
 function* run (context, heroku) {
+  // Users receive `You'll be billed monthly for teams over 5 members.`
+  // message when going over the FREE_TEAM_LIMIT
   const FREE_TEAM_LIMIT = 5;
   let org   = context.org;
   let email = context.args.email;
