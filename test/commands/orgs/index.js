@@ -22,7 +22,7 @@ org b         admin
       .then(() => api.done());
   });
 
-  it('shows member when role is viewer', () => {
+  it('does not show member when role is viewer', () => {
     let api = nock('https://api.heroku.com:443')
     .get('/organizations')
     .reply(200, [
@@ -30,7 +30,7 @@ org b         admin
     ]);
     return cmd.run({flags: {}})
     .then(() => expect(
-`org a         member
+`org a         viewer
 `).to.eq(cli.stdout))
       .then(() => expect(``).to.eq(cli.stderr))
       .then(() => api.done());
