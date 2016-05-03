@@ -193,9 +193,9 @@ $ npm test
 
 1. Release a new version of this npm package.
 
-```
-$ npm version patch/minor/major
-```
+  ```
+  $ npm version patch/minor/major
+  ```
 
 2. Open a new pr in https://github.com/heroku/cli/blob/master/package.json, updating to the appropiate heroku-orgs version.
 
