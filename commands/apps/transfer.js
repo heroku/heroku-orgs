@@ -6,32 +6,40 @@ let extend      = require('util')._extend;
 let lock        = require('./lock.js').apps;
 
 function* run (context, heroku) {
-  let app    = context.app;
   let recipient = context.args.recipient;
 
-  let request = heroku.request({
-    method:  'PATCH',
-    path:    `/organizations/apps/${app}`,
-    body:    {owner: recipient},
-  });
-
-  yield cli.action(`Transferring ${cli.color.cyan(app)} to ${cli.color.magenta(recipient)}`, request);
-
-  if (context.flags.locked) {
+  if (context.flags.bulk) {
     yield lock.run(context);
+  } else {
+    let app    = context.app;
+
+    let request = heroku.request({
+      method:  'PATCH',
+      path:    `/organizations/apps/${app}`,
+      body:    {owner: recipient},
+    });
+
+    yield cli.action(`Transferring ${cli.color.cyan(app)} to ${cli.color.magenta(recipient)}`, request);
+
+    if (context.flags.locked) {
+      yield lock.run(context);
+    }
   }
 }
 
 let cmd = {
   topic:        'apps',
   command:      'transfer',
-  description:  'transfer an app to another user or organization',
+  description:  'transfer applications to another user, organization or team',
   needsAuth:    true,
-  needsApp:     true,
+  wantsApp:     true,
   run:          cli.command(co.wrap(run)),
-  args:         [{name: 'recipient', description: 'user or org to transfer app to'}],
+  args:         [
+    {name: 'recipient', description: 'user, organization or team to transfer applications to'},
+  ],
   flags: [
     {name: 'locked', char: 'l', hasValue: false, required: false, description: 'lock the app upon transfer'},
+    {name: 'bulk', char: 'b', hasValue: false, required: false, description: 'transfer applications in bulk'},
   ],
   help: `
 Examples:
@@ -41,6 +49,9 @@ Examples:
 
   $ heroku apps:transfer acme-widgets
   Transferring example to acme-widgets... done
+
+  $ heroku apps:transfer --bulk acme-widgets
+  ...
   `,
 };
 
