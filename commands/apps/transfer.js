@@ -17,36 +17,61 @@ function getAppsToTransfer (context, apps) {
   }])
 }
 
-function* run (context, heroku) {
-  let transfer = co.wrap(function * (app, recipient) {
-    yield cli.action(`Transferring ${cli.color.cyan(app)} to ${cli.color.magenta(recipient)}`, co(function * () {
-      cli.action.status('foo')
-      yield heroku.request({
-        method:  'PATCH',
-        path:    `/organizations/apps/${app}`,
-        body:    {owner: recipient},
-      });
-    }));
-  });
+function Apps (apps) {
+  this.apps = apps;
 
+  this.added = this.apps.filter((app) => !app._failed);
+  this.failed = this.apps.filter((app) => app._failed);
+
+  this.hasFailed = this.failed.length > 0;
+}
+
+function* run (context, heroku) {
   let recipient = context.args.recipient;
 
   if (context.flags.bulk) {
     let apps = ['desolate-savannah-19008', 'sadfsdf'];
 
-    apps.map(co.wrap(function* (app) {
-      console.log(app)
-      // yield transfer(app, recipient);
+    cli.log(`Transferring applications to ${cli.color.magenta(recipient)}`);
 
+    let promise = Promise.all(apps.map(function (app) {
       return heroku.request({
         method:  'PATCH',
         path:    `/organizations/apps/${app}`,
         body:    {owner: recipient},
+      }).catch(function (err) {
+        return {_name: app, _failed: true, _err: err}
       });
-    }));
+    })).then(function (data) {;
+      let apps = new Apps(data)
+      if (apps.hasFailed) {
+        throw apps;
+      }
+      return apps;
+    });
 
+    apps = yield cli.action(`${apps.map((app) => cli.color.app(app)).join('\n')}`, {}, promise).catch(function (err) {
+      if (err instanceof Apps) { return err; }
+      throw err;
+    });
+
+    if (apps.hasFailed) {
+      cli.log();
+      apps.failed.forEach(function (app) {
+        cli.error(`An error was encountered when transferring ${cli.color.app(app._name)}`)
+        cli.error(app._err)
+      });
+    }
   } else {
-    yield transfer(context.app, recipient);
+    let app = context.app;
+    let request = heroku.request({
+      method:  'PATCH',
+      path:    `/organizations/apps/${app}`,
+      body:    {owner: recipient},
+    });
+
+    yield cli.action(`Transferring ${cli.color.app(app)} to ${cli.color.magenta(recipient)}`, request);
+
     if (context.flags.locked) {
       yield lock.run(context);
     }
