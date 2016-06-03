@@ -6,16 +6,21 @@ let extend      = require('util')._extend;
 let lock        = require('./lock.js').apps;
 let inquirer    = require('inquirer');
 let _           = require('lodash');
+let Utils       = require('../../lib/utils');
 
 function getAppsToTransfer (apps) {
   return inquirer.prompt([{
     type: 'checkbox',
     name: 'choices',
+    pageSize: 20,
     message: 'Select applications you would like to transfer',
     choices: apps.map(function (app) {
-      return {name: app}
+      return {
+        name: `${app.name} (${Utils.getOwner(app.owner.email)})`,
+        value: app.name
+      };
     })
-  }])
+  }]);
 }
 
 function Apps (apps) {
@@ -36,24 +41,19 @@ function* run (context, heroku) {
       user: heroku.get('/account')
     };
 
-    let personalApps = _.filter(requests.apps, function(app) {
-      return app.owner.email === requests.user.email
-    });
-
-    let apps = yield getAppsToTransfer(_.flatMap(personalApps, 'name'));
+    let apps = yield getAppsToTransfer(_.sortBy(requests.apps, 'name'));
 
     cli.log(`Transferring applications to ${cli.color.magenta(recipient)}`);
-
     let promise = Promise.all(apps.choices.map(function (app) {
       return heroku.request({
         method:  'PATCH',
         path:    `/organizations/apps/${app}`,
         body:    {owner: recipient},
       }).catch(function (err) {
-        return {_name: app, _failed: true, _err: err}
+        return {_name: app, _failed: true, _err: err};
       });
-    })).then(function (data) {;
-      let apps = new Apps(data)
+    })).then(function (data) {
+      let apps = new Apps(data);
       if (apps.hasFailed) {
         throw apps;
       }
@@ -68,8 +68,8 @@ function* run (context, heroku) {
     if (apps.hasFailed) {
       cli.log();
       apps.failed.forEach(function (app) {
-        cli.error(`An error was encountered when transferring ${cli.color.app(app._name)}`)
-        cli.error(app._err)
+        cli.error(`An error was encountered when transferring ${cli.color.app(app._name)}`);
+        cli.error(app._err);
       });
     }
   } else {
