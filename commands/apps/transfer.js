@@ -5,11 +5,12 @@ let co          = require('co');
 let extend      = require('util')._extend;
 let lock        = require('./lock.js').apps;
 let inquirer    = require('inquirer');
+let _           = require('lodash');
 
-function getAppsToTransfer (context, apps) {
+function getAppsToTransfer (apps) {
   return inquirer.prompt([{
     type: 'checkbox',
-    name: 'apps',
+    name: 'choices',
     message: 'Select applications you would like to transfer',
     choices: apps.map(function (app) {
       return {name: app}
@@ -30,11 +31,20 @@ function* run (context, heroku) {
   let recipient = context.args.recipient;
 
   if (context.flags.bulk) {
-    let apps = ['desolate-savannah-19008', 'sadfsdf'];
+    let requests = yield {
+      apps: heroku.get('/apps'),
+      user: heroku.get('/account')
+    };
+
+    let personalApps = _.filter(requests.apps, function(app) {
+      return app.owner.email === requests.user.email
+    });
+
+    let apps = yield getAppsToTransfer(_.flatMap(personalApps, 'name'));
 
     cli.log(`Transferring applications to ${cli.color.magenta(recipient)}`);
 
-    let promise = Promise.all(apps.map(function (app) {
+    let promise = Promise.all(apps.choices.map(function (app) {
       return heroku.request({
         method:  'PATCH',
         path:    `/organizations/apps/${app}`,
@@ -50,7 +60,7 @@ function* run (context, heroku) {
       return apps;
     });
 
-    apps = yield cli.action(`${apps.map((app) => cli.color.app(app)).join('\n')}`, {}, promise).catch(function (err) {
+    apps = yield cli.action(`${apps.choices.map((app) => cli.color.app(app)).join('\n')}`, {}, promise).catch(function (err) {
       if (err instanceof Apps) { return err; }
       throw err;
     });
