@@ -4,23 +4,49 @@ let cli         = require('heroku-cli-util');
 let co          = require('co');
 let extend      = require('util')._extend;
 let lock        = require('./lock.js').apps;
+let inquirer    = require('inquirer');
+
+function getAppsToTransfer (context, apps) {
+  return inquirer.prompt([{
+    type: 'checkbox',
+    name: 'apps',
+    message: 'Select applications you would like to transfer',
+    choices: apps.map(function (app) {
+      return {name: app}
+    })
+  }])
+}
 
 function* run (context, heroku) {
+  let transfer = co.wrap(function * (app, recipient) {
+    yield cli.action(`Transferring ${cli.color.cyan(app)} to ${cli.color.magenta(recipient)}`, co(function * () {
+      cli.action.status('foo')
+      yield heroku.request({
+        method:  'PATCH',
+        path:    `/organizations/apps/${app}`,
+        body:    {owner: recipient},
+      });
+    }));
+  });
+
   let recipient = context.args.recipient;
 
   if (context.flags.bulk) {
-    yield lock.run(context);
+    let apps = ['desolate-savannah-19008', 'sadfsdf'];
+
+    apps.map(co.wrap(function* (app) {
+      console.log(app)
+      // yield transfer(app, recipient);
+
+      return heroku.request({
+        method:  'PATCH',
+        path:    `/organizations/apps/${app}`,
+        body:    {owner: recipient},
+      });
+    }));
+
   } else {
-    let app    = context.app;
-
-    let request = heroku.request({
-      method:  'PATCH',
-      path:    `/organizations/apps/${app}`,
-      body:    {owner: recipient},
-    });
-
-    yield cli.action(`Transferring ${cli.color.cyan(app)} to ${cli.color.magenta(recipient)}`, request);
-
+    yield transfer(context.app, recipient);
     if (context.flags.locked) {
       yield lock.run(context);
     }
@@ -39,7 +65,7 @@ let cmd = {
   ],
   flags: [
     {name: 'locked', char: 'l', hasValue: false, required: false, description: 'lock the app upon transfer'},
-    {name: 'bulk', char: 'b', hasValue: false, required: false, description: 'transfer applications in bulk'},
+    {name: 'bulk', hasValue: false, required: false, description: 'transfer applications in bulk'},
   ],
   help: `
 Examples:
