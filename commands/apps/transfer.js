@@ -4,16 +4,29 @@ let cli         = require('heroku-cli-util');
 let co          = require('co');
 let extend      = require('util')._extend;
 let lock        = require('./lock.js').apps;
+let Utils       = require('../../lib/utils');
 
 function* run (context, heroku) {
   let app    = context.app;
   let recipient = context.args.recipient;
+  let request;
 
-  let request = heroku.request({
-    method:  'PATCH',
-    path:    `/organizations/apps/${app}`,
-    body:    {owner: recipient},
-  });
+  let appInfo = yield heroku.get(`/apps/${app}`);
+
+  if (Utils.isOrgApp(recipient) || Utils.isOrgApp(appInfo.owner.email)) {
+    request = heroku.request({
+      method:  'PATCH',
+      path:    `/organizations/apps/${app}`,
+      body:    {owner: recipient},
+    });
+  } else {
+    request = heroku.post(`/account/app-transfers`, {
+      body: {
+        app: app,
+        recipient: recipient
+      }
+    });
+  }
 
   yield cli.action(`Transferring ${cli.color.cyan(app)} to ${cli.color.magenta(recipient)}`, request);
 
