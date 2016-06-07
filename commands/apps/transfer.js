@@ -10,6 +10,7 @@ function* run (context, heroku) {
   let app    = context.app;
   let recipient = context.args.recipient;
   let request;
+  let transferMsg;
 
   let appInfo = yield heroku.get(`/apps/${app}`);
 
@@ -19,16 +20,20 @@ function* run (context, heroku) {
       path:    `/organizations/apps/${app}`,
       body:    {owner: recipient},
     });
+    transferMsg = `Transferring ${cli.color.app(app)} to ${cli.color.magenta(recipient)}`;
   } else {
+    transferMsg = `Initiating transfer of ${cli.color.app(app)} to ${cli.color.magenta(recipient)}`;
     request = heroku.post(`/account/app-transfers`, {
       body: {
         app: app,
         recipient: recipient
       }
+    }).then(request => {
+      if (request.state === 'pending') cli.action.done('email sent');
     });
   }
 
-  yield cli.action(`Transferring ${cli.color.cyan(app)} to ${cli.color.magenta(recipient)}`, request);
+  yield cli.action(transferMsg, request);
 
   if (context.flags.locked) {
     yield lock.run(context);

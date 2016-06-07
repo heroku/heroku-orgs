@@ -5,6 +5,23 @@ let stubGet   = require('../../stub/get');
 let stubPost   = require('../../stub/post');
 let stubPatch = require('../../stub/patch');
 
+function orgAppTransfer() {
+  let api = stubPatch.orgAppTransfer();
+  return cmd.run({app: 'myapp', args: {recipient: 'foo@foo.com'}, flags: {}})
+  .then(() => expect(``).to.eq(cli.stdout))
+  .then(() => expect(`Transferring myapp to foo@foo.com... done\n`).to.eq(cli.stderr))
+  .then(() => api.done());
+}
+
+function personalAppTransfer() {
+  let api = stubPost.personalAppTransfer();
+  return cmd.run({app: 'myapp', args: {recipient: 'foo@foo.com'}, flags: {}})
+  .then(() => expect(``).to.eq(cli.stdout))
+  .then(() => expect(`Initiating transfer of myapp to foo@foo.com... email sent
+`).to.eq(cli.stderr))
+  .then(() => api.done());
+}
+
 describe('heroku apps:transfer', () => {
   beforeEach(() => cli.mockConsole());
   afterEach(()  => nock.cleanAll());
@@ -14,12 +31,12 @@ describe('heroku apps:transfer', () => {
       stubGet.personalApp();
     });
 
-    it('transfers the app to a user', () => {
-      let api = stubPost.personalAppTransfer();
-      return cmd.run({app: 'myapp', args: {recipient: 'foo@foo.com'}, flags: {}})
-      .then(() => expect(``).to.eq(cli.stdout))
-      .then(() => expect(`Transferring myapp to foo@foo.com... done\n`).to.eq(cli.stderr))
-      .then(() => api.done());
+    it('transfers the app to a personal account', () => {
+      personalAppTransfer();
+    });
+
+    it('transfers the app to an organization', () => {
+      orgAppTransfer();
     });
   });
 
@@ -28,12 +45,12 @@ describe('heroku apps:transfer', () => {
       stubGet.orgApp();
     });
 
-    it('transfers the app to a user', () => {
-      let api = stubPatch.orgAppTransfer();
-      return cmd.run({app: 'myapp', args: {recipient: 'foo@foo.com'}, flags: {}})
-      .then(() => expect(``).to.eq(cli.stdout))
-      .then(() => expect(`Transferring myapp to foo@foo.com... done\n`).to.eq(cli.stderr))
-      .then(() => api.done());
+    it('transfers the app to a personal account', () => {
+      personalAppTransfer();
+    });
+
+    it('transfers the app to an organization', () => {
+      orgAppTransfer();
     });
 
     it('transfers and locks the app if --locked is passed', () => {
@@ -53,6 +70,5 @@ describe('heroku apps:transfer', () => {
     });
 
   });
-
 
 });
