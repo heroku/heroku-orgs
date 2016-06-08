@@ -76,7 +76,7 @@ function* run (context, heroku) {
       heroku: heroku,
       appName: appInfo.name,
       recipient: recipient,
-      personalAppTransfer: !Utils.isOrgApp(recipient) && !Utils.isOrgApp(appInfo.owner.email)
+      personalAppTransfer: Utils.isValidEmail(recipient) && !Utils.isOrgApp(appInfo.owner.email)
     };
 
     let appTransfer = new AppTransfer(opts);
