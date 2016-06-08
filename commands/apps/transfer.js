@@ -1,13 +1,13 @@
 'use strict';
 
+let _           = require('lodash');
+let AppTransfer = require('../../lib/app_transfer');
 let cli         = require('heroku-cli-util');
 let co          = require('co');
 let extend      = require('util')._extend;
 let inquirer    = require('inquirer');
 let lock        = require('./lock.js').apps;
 let Utils       = require('../../lib/utils');
-let _           = require('lodash');
-let AppTransfer = require('../../lib/appTransfer');
 
 function getAppsToTransfer (apps) {
   return inquirer.prompt([{
@@ -49,7 +49,7 @@ function* run (context, heroku) {
       };
 
       let appTransfer = new AppTransfer(opts);
-      return appTransfer.initiateTransfer().catch(function (err) {
+      return appTransfer.init().catch(function (err) {
         return {_name: app.name, _failed: true, _err: err};
       });
     })).then(function (data) {
@@ -81,7 +81,7 @@ function* run (context, heroku) {
     };
 
     let appTransfer = new AppTransfer(opts);
-    yield appTransfer.transfer();
+    yield appTransfer.start();
 
     if (context.flags.locked) {
       yield lock.run(context);
