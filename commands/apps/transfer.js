@@ -3,10 +3,47 @@
 let cli         = require('heroku-cli-util');
 let co          = require('co');
 let extend      = require('util')._extend;
-let lock        = require('./lock.js').apps;
 let inquirer    = require('inquirer');
-let _           = require('lodash');
+let lock        = require('./lock.js').apps;
 let Utils       = require('../../lib/utils');
+let _           = require('lodash');
+
+class AppTransfer {
+  /**
+   * @param {Object} options
+   * @param {Object} options.heroku - instance of heroku-client
+   * @param {string} options.appName - application that is being transferred
+   * @param {string} options.recipient - recipient of the transfer
+   * @param {boolean} options.personalAppTransfer - determines if it is a transfer between individual accounts
+  */
+  constructor (opts) {
+    this.opts = opts;
+    this.heroku = opts.heroku;
+    this.opts.appName = opts.appName;
+    this.opts.recipient = opts.recipient;
+    if (this.opts.personalAppTransfer === undefined) this.opts.personalAppTransfer = true;
+
+    if (this.opts.personalAppTransfer) {
+      this.opts.body = { app: this.opts.appName, recipient: this.opts.recipient };
+      this.opts.transferMsg = `Initiating transfer of ${cli.color.app(this.opts.appName)} to ${cli.color.magenta(this.opts.recipient)}`;
+    } else {
+      this.opts.body = { owner: this.opts.recipient };
+      this.opts.transferMsg = `Transferring ${cli.color.app(this.opts.appName)} to ${cli.color.magenta(this.opts.recipient)}`;
+    }
+  }
+
+  transfer () {
+    let request = this.heroku.request({
+      path: this.opts.personalTransfer ? `/account/app-transfers` : `/organizations/apps/${this.opts.appName}`,
+      method: this.opts.personalTransfer ? 'POST' : 'PATCH',
+      body: this.opts.body
+    }).then(request => {
+      if (request.state === 'pending') cli.action.done('email sent');
+    });
+
+    return cli.action(this.opts.transferMsg, request);
+  }
+}
 
 function getAppsToTransfer (apps) {
   return inquirer.prompt([{
@@ -28,11 +65,11 @@ function Apps (apps) {
 
   this.added = this.apps.filter((app) => !app._failed);
   this.failed = this.apps.filter((app) => app._failed);
-
   this.hasFailed = this.failed.length > 0;
 }
 
 function* run (context, heroku) {
+  let app       = context.app;
   let recipient = context.args.recipient;
 
   if (context.flags.bulk) {
@@ -73,14 +110,17 @@ function* run (context, heroku) {
       });
     }
   } else {
-    let app = context.app;
-    let request = heroku.request({
-      method:  'PATCH',
-      path:    `/organizations/apps/${app}`,
-      body:    {owner: recipient},
-    });
+    let appInfo = yield heroku.get(`/apps/${app}`);
 
-    yield cli.action(`Transferring ${cli.color.app(app)} to ${cli.color.magenta(recipient)}`, request);
+    let opts = {
+      heroku: heroku,
+      appName: appInfo.name,
+      recipient: recipient,
+      personalAppTransfer: !Utils.isOrgApp(recipient) && !Utils.isOrgApp(appInfo.owner.email)
+    };
+
+    let appTransfer = new AppTransfer(opts);
+    yield appTransfer.transfer();
 
     if (context.flags.locked) {
       yield lock.run(context);
