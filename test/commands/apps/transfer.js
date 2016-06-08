@@ -26,11 +26,20 @@ describe('heroku apps:transfer', () => {
       inquirer.prompt = (prompts) => {
         let choices = prompts[0].choices;
         expect(choices).to.eql([
-          { name: 'my-org-app (organization)', value: 'my-org-app' },
-          { name: 'my-team-app (team)', value: 'my-team-app' },
-          { name: 'myapp (foo@foo.com)', value: 'myapp' }
+          {
+            name: 'my-org-app (organization)',
+            value: { name: 'my-org-app', owner: 'organization@herokumanager.com' }
+          },
+          {
+            name: 'my-team-app (team)',
+            value: { name: 'my-team-app', owner: 'team@herokumanager.com' }
+          },
+          {
+            name: 'myapp (foo@foo.com)',
+            value: { name: 'myapp', owner: 'foo@foo.com' }
+          }
         ]);
-        return Promise.resolve({choices: ['myapp']});
+        return Promise.resolve({choices: [{ name: 'myapp', owner: 'foo@foo.com' }]});
       };
 
       let api = stubPatch.orgAppTransfer();
@@ -46,14 +55,23 @@ describe('heroku apps:transfer', () => {
       inquirer.prompt = (prompts) => {
         let choices = prompts[0].choices;
         expect(choices).to.eql([
-          { name: 'my-org-app (organization)', value: 'my-org-app' },
-          { name: 'my-team-app (team)', value: 'my-team-app' },
-          { name: 'myapp (foo@foo.com)', value: 'myapp' }
+          {
+            name: 'my-org-app (organization)',
+            value: { name: 'my-org-app', owner: 'organization@herokumanager.com' }
+          },
+          {
+            name: 'my-team-app (team)',
+            value: { name: 'my-team-app', owner: 'team@herokumanager.com' }
+          },
+          {
+            name: 'myapp (foo@foo.com)',
+            value: { name: 'myapp', owner: 'foo@foo.com' }
+          }
         ]);
-        return Promise.resolve({choices: ['myapp']});
+        return Promise.resolve({choices: [{ name: 'myapp', owner: 'foo@foo.com' }]});
       };
 
-      let api = stubPatch.personalAppTransfer();
+      let api = stubPost.personalAppTransfer();
       return cmd.run({args: {recipient: 'raulb@heroku.com'}, flags: {bulk: true}})
       .then(function() {
         api.done();
@@ -70,9 +88,9 @@ describe('heroku apps:transfer', () => {
 
     it('transfers the app to a personal account', () => {
       let api = stubPost.personalAppTransfer();
-      return cmd.run({app: 'myapp', args: {recipient: 'foo@foo.com'}, flags: {}})
+      return cmd.run({app: 'myapp', args: {recipient: 'raulb@heroku.com'}, flags: {}})
       .then(() => expect(``).to.eq(cli.stdout))
-      .then(() => expect(`Initiating transfer of myapp to foo@foo.com... email sent\n`).to.eq(cli.stderr))
+      .then(() => expect(`Initiating transfer of myapp to raulb@heroku.com... email sent\n`).to.eq(cli.stderr))
       .then(() => api.done());
     });
 

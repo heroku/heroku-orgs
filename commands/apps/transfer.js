@@ -18,7 +18,7 @@ function getAppsToTransfer (apps) {
     choices: apps.map(function (app) {
       return {
         name: `${app.name} (${Utils.getOwner(app.owner.email)})`,
-        value: app.name
+        value: { name: app.name, owner: app.owner.email }
       };
     })
   }]);
@@ -41,23 +41,24 @@ function* run (context, heroku) {
     cli.log(`Transferring applications to ${cli.color.magenta(recipient)}`);
 
     let promise = Promise.all(selectedApps.choices.map(function (app) {
-      return heroku.request({
-        method:  'PATCH',
-        path:    `/organizations/apps/${app}`,
-        body:    {owner: recipient},
-      }).catch(function (err) {
-        return {_name: app, _failed: true, _err: err};
+      let opts = {
+        heroku: heroku,
+        appName: app.name,
+        recipient: recipient,
+        personalAppTransfer: Utils.isValidEmail(recipient) && !Utils.isOrgApp(app.owner)
+      };
+
+      let appTransfer = new AppTransfer(opts);
+      return appTransfer.initiateTransfer().catch(function (err) {
+        return {_name: app.name, _failed: true, _err: err};
       });
     })).then(function (data) {
       let apps = new Apps(data);
-      if (apps.hasFailed) {
-        throw apps;
-      }
+      if (apps.hasFailed) { throw apps; }
       return apps;
     });
 
-    selectedApps = yield cli.action(`${selectedApps.choices.map((app) => cli.color.app(app)).join('\n')}`, {}, promise).catch(function (err) {
-      console.log(`err: ${err}`);
+    selectedApps = yield cli.action(`${selectedApps.choices.map((app) => cli.color.app(app.name)).join('\n')}`, {}, promise).catch(function (err) {
       if (err instanceof Apps) { return err; }
       throw err;
     });
