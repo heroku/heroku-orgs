@@ -37,11 +37,10 @@ function* run (context, heroku) {
 
   if (context.flags.bulk) {
     let allApps = yield heroku.get('/apps');
-    let apps = yield getAppsToTransfer(_.sortBy(allApps, 'name'));
-
+    let selectedApps = yield getAppsToTransfer(_.sortBy(allApps, 'name'));
     cli.log(`Transferring applications to ${cli.color.magenta(recipient)}`);
 
-    let promise = Promise.all(apps.choices.map(function (app) {
+    let promise = Promise.all(selectedApps.choices.map(function (app) {
       return heroku.request({
         method:  'PATCH',
         path:    `/organizations/apps/${app}`,
@@ -57,14 +56,15 @@ function* run (context, heroku) {
       return apps;
     });
 
-    apps = yield cli.action(`${apps.choices.map((app) => cli.color.app(app)).join('\n')}`, {}, promise).catch(function (err) {
+    selectedApps = yield cli.action(`${selectedApps.choices.map((app) => cli.color.app(app)).join('\n')}`, {}, promise).catch(function (err) {
+      console.log(`err: ${err}`);
       if (err instanceof Apps) { return err; }
       throw err;
     });
 
-    if (apps.hasFailed) {
+    if (selectedApps.hasFailed) {
       cli.log();
-      apps.failed.forEach(function (app) {
+      selectedApps.failed.forEach(function (app) {
         cli.error(`An error was encountered when transferring ${cli.color.app(app._name)}`);
         cli.error(app._err);
       });
