@@ -24,13 +24,6 @@ function getAppsToTransfer (apps) {
   }]);
 }
 
-function Apps (apps) {
-  this.apps = apps;
-  this.added = this.apps.filter((app) => !app._failed);
-  this.failed = this.apps.filter((app) => app._failed);
-  this.hasFailed = this.failed.length > 0;
-}
-
 function* run (context, heroku) {
   let app       = context.app;
   let recipient = context.args.recipient;
@@ -38,49 +31,30 @@ function* run (context, heroku) {
   if (context.flags.bulk) {
     let allApps = yield heroku.get('/apps');
     let selectedApps = yield getAppsToTransfer(_.sortBy(allApps, 'name'));
-    cli.log(`Transferring applications to ${cli.color.magenta(recipient)}`);
+    cli.console.error(`Transferring applications to ${cli.color.magenta(recipient)}...\n`);
 
-    let promise = Promise.all(selectedApps.choices.map(function (app) {
-      let opts = {
-        heroku: heroku,
-        appName: app.name,
-        recipient: recipient,
-        personalAppTransfer: Utils.isValidEmail(recipient) && !Utils.isOrgApp(app.owner)
-      };
-
-      let appTransfer = new AppTransfer(opts);
-      return appTransfer.init().catch(function (err) {
-        return {_name: app.name, _failed: true, _err: err};
-      });
-    })).then(function (data) {
-      let apps = new Apps(data);
-      if (apps.hasFailed) { throw apps; }
-      return apps;
-    });
-
-    selectedApps = yield cli.action(`${selectedApps.choices.map((app) => cli.color.app(app.name)).join('\n')}`, {}, promise).catch(function (err) {
-      if (err instanceof Apps) { return err; }
-      throw err;
-    });
-
-    if (selectedApps.hasFailed) {
-      cli.log();
-      selectedApps.failed.forEach(function (app) {
-        cli.error(`An error was encountered when transferring ${cli.color.app(app._name)}`);
-        cli.error(app._err);
-      });
+    for (let app of selectedApps.choices) {
+      try {
+        let appTransfer = new AppTransfer({
+          heroku: heroku,
+          appName: app.name,
+          recipient: recipient,
+          personalAppTransfer: Utils.isValidEmail(recipient) && !Utils.isOrgApp(app.owner),
+          bulk: true
+        });
+        yield appTransfer.start();
+      } catch (err) {
+        cli.error(err);
+      }
     }
   } else {
     let appInfo = yield heroku.get(`/apps/${app}`);
-
-    let opts = {
+    let appTransfer = new AppTransfer({
       heroku: heroku,
       appName: appInfo.name,
       recipient: recipient,
       personalAppTransfer: Utils.isValidEmail(recipient) && !Utils.isOrgApp(appInfo.owner.email)
-    };
-
-    let appTransfer = new AppTransfer(opts);
+    });
     yield appTransfer.start();
 
     if (context.flags.locked) {

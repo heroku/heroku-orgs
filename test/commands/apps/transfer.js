@@ -6,7 +6,6 @@ let stubGet       = require('../../stub/get');
 let stubPost      = require('../../stub/post');
 let stubPatch     = require('../../stub/patch');
 let proxyquire    = require('proxyquire').noCallThru();
-let unwrap        = require('../../unwrap');
 
 describe('heroku apps:transfer', () => {
   beforeEach(() => {
@@ -46,8 +45,9 @@ describe('heroku apps:transfer', () => {
       return cmd.run({args: {recipient: 'team'}, flags: {bulk: true}})
       .then(function() {
         api.done();
-        expect(cli.stdout).to.equal('Transferring applications to team\n');
-        expect(unwrap(cli.stderr)).to.equal('myapp... done\n');
+        expect(cli.stderr).to.equal(`Transferring applications to team...
+
+Transferring myapp... done\n`);
       });
     });
 
@@ -75,8 +75,9 @@ describe('heroku apps:transfer', () => {
       return cmd.run({args: {recipient: 'raulb@heroku.com'}, flags: {bulk: true}})
       .then(function() {
         api.done();
-        expect(cli.stdout).to.equal('Transferring applications to raulb@heroku.com\n');
-        expect(unwrap(cli.stderr)).to.equal('myapp... done\n');
+        expect(cli.stderr).to.equal(`Transferring applications to raulb@heroku.com...
+
+Initiating transfer of myapp... email sent\n`);
       });
     });
   });
