@@ -41,7 +41,7 @@ function * run (context, heroku) {
           heroku: heroku,
           appName: app.name,
           recipient: recipient,
-          interPersonalTransfer: Utils.isValidEmail(recipient) && !Utils.isOrgApp(app.owner),
+          personalToPersonal: Utils.isValidEmail(recipient) && !Utils.isOrgApp(app.owner),
           bulk: true
         })
         yield appTransfer.start()
@@ -61,7 +61,7 @@ function * run (context, heroku) {
       heroku: heroku,
       appName: appInfo.name,
       recipient: recipient,
-      interPersonalTransfer: Utils.isValidEmail(recipient) && !Utils.isOrgApp(appInfo.owner.email)
+      personalToPersonal: Utils.isValidEmail(recipient) && !Utils.isOrgApp(appInfo.owner.email)
     })
     yield appTransfer.start()
 

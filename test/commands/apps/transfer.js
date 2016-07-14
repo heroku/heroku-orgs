@@ -73,7 +73,7 @@ Transferring myapp... done
         return Promise.resolve({choices: [{ name: 'myapp', owner: 'foo@foo.com' }]})
       }
 
-      let api = stubPost.interPersonalTransfer()
+      let api = stubPost.personalToPersonal()
       return cmd.run({args: {recipient: 'raulb@heroku.com'}, flags: {bulk: true}})
         .then(function () {
           api.done()
@@ -91,7 +91,7 @@ Initiating transfer of myapp... email sent
     })
 
     it('transfers the app to a personal account', () => {
-      let api = stubPost.interPersonalTransfer()
+      let api = stubPost.personalToPersonal()
       return cmd.run({app: 'myapp', args: {recipient: 'raulb@heroku.com'}, flags: {}})
         .then(() => expect('').to.eq(cli.stdout))
         .then(() => expect(`Initiating transfer of myapp to raulb@heroku.com... email sent
