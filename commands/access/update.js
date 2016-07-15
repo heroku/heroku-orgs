@@ -15,7 +15,7 @@ function * run (context, heroku) {
 
   let appInfo = yield heroku.get(`/apps/${appName}`)
 
-  if (context.flags.privileges) cli.warn('WARNING: --privileges has been deprecated and will alias to --permissions.')
+  if (context.flags.privileges) cli.warn('DEPRECATION WARNING: use `--permissions` not `--privileges`')
   if (!Utils.isOrgApp(appInfo.owner.email)) error.exit(1, `Error: cannot update permissions. The app ${cli.color.cyan(appName)} is not owned by an organization`)
 
   // Give implicit `view` access

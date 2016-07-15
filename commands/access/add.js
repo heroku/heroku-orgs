@@ -28,7 +28,7 @@ function * run (context, heroku) {
   if (_.includes(orgFlags, 'org-access-controls')) {
     if (!permissions) error.exit(1, 'Missing argument: permissions')
 
-    if (context.flags.privileges) cli.warn('WARNING: --privileges has been deprecated and will alias to --permissions.')
+    if (context.flags.privileges) cli.warn('DEPRECATION WARNING: use `--permissions` not `--privileges`')
 
     permissions = permissions.split(',')
 
@@ -60,12 +60,11 @@ let cmd = {
   needsApp: true,
   command: 'add',
   description: 'Add new users to your app',
-  help: 'heroku access:add user@email.com --app APP # Add a collaborator to your app\n\nheroku access:add user@email.com --app APP --permissions deploy,manage,operate # privileges must be comma separated',
+  help: 'heroku access:add user@email.com --app APP # Add a collaborator to your app\n\nheroku access:add user@email.com --app APP --permissions deploy,manage,operate # permissions must be comma separated',
   args: [{name: 'email', optional: false}],
   flags: [
     {name: 'permissions', description: 'list of permissions comma separated', hasValue: true, optional: true},
     {name: 'privileges', hasValue: true, optional: true, hidden: true} // Deprecated flag
-
   ],
   run: cli.command(co.wrap(run))
 }
