@@ -28,5 +28,5 @@ function personalToPersonal () {
 module.exports = {
   collaborators: collaborators,
   personalToPersonal: personalToPersonal,
-  collaboratorsWithPermissions: collaboratorsWithPermissions,
+  collaboratorsWithPermissions: collaboratorsWithPermissions
 }
