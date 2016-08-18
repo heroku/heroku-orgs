@@ -39,8 +39,7 @@ function * run (context, heroku) {
 
   let app = yield heroku.get(`/apps/${appName}`)
   let isOrgApp = Utils.isOrgApp(app.owner.email)
-  const path = isOrgApp ? `/organizations/apps/${appName}/collaborators` : `/apps/${appName}/collaborators`
-  let collaborators = yield heroku.get(path)
+  let collaborators = yield heroku.get(`/apps/${appName}/collaborators`)
 
   if (isOrgApp) {
     let orgName = Utils.getOwner(app.owner.email)

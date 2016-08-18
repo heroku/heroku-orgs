@@ -12,13 +12,12 @@ function apps () {
     ])
 }
 
-function appCollaborators () {
+function appCollaborators (collaborators =
+  [{user: {email: 'raulb@heroku.com'}, role: 'owner'},
+  {user: {email: 'jeff@heroku.com'}, role: 'collaborator'}]) {
   return nock('https://api.heroku.com:443')
     .get('/apps/myapp/collaborators')
-    .reply(200, [
-      {user: {email: 'raulb@heroku.com'}, role: 'owner'},
-      {user: {email: 'jeff@heroku.com'}, role: 'collaborator'}
-    ])
+    .reply(200, collaborators)
 }
 
 function appPermissions () {
@@ -53,32 +52,11 @@ function orgApp (locked = false) {
     })
 }
 
-function orgAppCollaborators () {
-  return nock('https://api.heroku.com:443', {
-    reqheaders: {Accept: 'application/vnd.heroku+json; version=3'}
-  })
-    .get('/organizations/apps/myapp/collaborators')
-    .reply(200, [
-      {
-        role: 'owner',
-        user: { email: 'myorg@herokumanager.com' }
-      },
-      {
-        role: 'collaborator',
-        user: { email: 'bob@heroku.com' }
-      },
-      {
-        role: 'admin',
-        user: { email: 'raulb@heroku.com' }
-      }
-    ])
-}
-
 function orgAppCollaboratorsWithPermissions () {
   return nock('https://api.heroku.com:443', {
     reqheaders: {Accept: 'application/vnd.heroku+json; version=3'}
   })
-    .get('/organizations/apps/myapp/collaborators')
+    .get('/apps/myapp/collaborators')
     .reply(200, [
       { permissions: [],
         role: 'owner',
@@ -152,7 +130,6 @@ module.exports = {
   appPermissions,
   orgs,
   orgApp,
-  orgAppCollaborators,
   orgAppCollaboratorsWithPermissions,
   orgFeatures,
   orgMembers,
