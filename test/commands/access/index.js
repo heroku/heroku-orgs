@@ -24,30 +24,7 @@ raulb@heroku.com  owner
     })
   })
 
-  context('with an enterprise organization', () => {
-    beforeEach(() => cli.mockConsole())
-    afterEach(() => nock.cleanAll())
-
-    it('shows the app collaborators and hides the org collaborator record', () => {
-      let apiGetOrgApp = stubGet.orgApp()
-      let apiGetOrgMembers = stubGet.orgMembers()
-      let apiGetAppPermissions = stubGet.appPermissions()
-      let apiGetOrgAppCollaboratorsWithPermissions = stubGet.orgAppCollaboratorsWithPermissions()
-
-      return cmd.run({app: 'myapp', flags: {}})
-        .then(() => expect(
-          `bob@heroku.com    member  deploy,view
-raulb@heroku.com  admin   deploy,manage,operate,view
-`).to.eq(cli.stdout))
-        .then(() => expect('').to.eq(cli.stderr))
-        .then(() => apiGetOrgApp.done())
-        .then(() => apiGetOrgMembers.done())
-        .then(() => apiGetAppPermissions.done())
-        .then(() => apiGetOrgAppCollaboratorsWithPermissions.done())
-    })
-  })
-
-  context('with an organization', () => {
+  context('with organization/team', () => {
     beforeEach(() => cli.mockConsole())
     afterEach(() => nock.cleanAll())
 

@@ -34,6 +34,15 @@ function appPermissions () {
     ])
 }
 
+function orgs (orgs = [
+  {name: 'org a', role: 'collaborator'},
+  {name: 'org b', role: 'admin'}
+]) {
+  return nock('https://api.heroku.com:443')
+    .get('/organizations')
+    .reply(200, orgs)
+}
+
 function orgApp (locked = false) {
   return nock('https://api.heroku.com:443')
     .get('/apps/myapp')
@@ -91,23 +100,23 @@ function orgFeatures (features) {
     .reply(200, features)
 }
 
-function orgMembers () {
+function orgMembers (members = [
+  {
+    email: 'raulb@heroku.com', role: 'admin',
+    user: { email: 'raulb@heroku.com' }
+  },
+  {
+    email: 'bob@heroku.com', role: 'viewer',
+    user: { email: 'bob@heroku.com' }
+  },
+  {
+    email: 'peter@heroku.com', role: 'collaborator',
+    user: { email: 'peter@heroku.com' }
+  }
+]) {
   return nock('https://api.heroku.com:443')
     .get('/organizations/myorg/members')
-    .reply(200, [
-      {
-        email: 'raulb@heroku.com', role: 'admin',
-        user: { email: 'raulb@heroku.com' }
-      },
-      {
-        email: 'bob@heroku.com', role: 'viewer',
-        user: { email: 'bob@heroku.com' }
-      },
-      {
-        email: 'peter@heroku.com', role: 'collaborator',
-        user: { email: 'peter@heroku.com' }
-      }
-    ])
+    .reply(200, members)
 }
 
 function variableSizeOrgMembers (orgSize) {
@@ -138,15 +147,16 @@ function userFeatureFlags (features) {
 }
 
 module.exports = {
-  apps: apps,
-  appCollaborators: appCollaborators,
-  appPermissions: appPermissions,
-  orgApp: orgApp,
-  orgAppCollaborators: orgAppCollaborators,
-  orgAppCollaboratorsWithPermissions: orgAppCollaboratorsWithPermissions,
-  orgFeatures: orgFeatures,
-  orgMembers: orgMembers,
-  personalApp: personalApp,
-  userFeatureFlags: userFeatureFlags,
-  variableSizeOrgMembers: variableSizeOrgMembers
+  apps,
+  appCollaborators,
+  appPermissions,
+  orgs,
+  orgApp,
+  orgAppCollaborators,
+  orgAppCollaboratorsWithPermissions,
+  orgFeatures,
+  orgMembers,
+  personalApp,
+  userFeatureFlags,
+  variableSizeOrgMembers
 }
