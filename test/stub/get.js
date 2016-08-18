@@ -83,14 +83,12 @@ function orgAppCollaboratorsWithPermissions () {
     ])
 }
 
-function orgFlags (flags) {
+function orgFeatures (features) {
   return nock('https://api.heroku.com:443', {
-    reqheaders: {Accept: 'application/vnd.heroku+json; version=2'}
+    reqheaders: {Accept: 'application/vnd.heroku+json; version=3'}
   })
-    .get('/v1/organization/myorg')
-    .reply(200, {
-      flags: flags
-    })
+    .get('/organizations/myorg/features')
+    .reply(200, features)
 }
 
 function orgMembers () {
@@ -133,10 +131,10 @@ function personalApp () {
     })
 }
 
-function userFeatureFlags (flags) {
+function userFeatureFlags (features) {
   return nock('https://api.heroku.com:443')
     .get('/account/features')
-    .reply(200, flags)
+    .reply(200, features)
 }
 
 module.exports = {
@@ -146,7 +144,7 @@ module.exports = {
   orgApp: orgApp,
   orgAppCollaborators: orgAppCollaborators,
   orgAppCollaboratorsWithPermissions: orgAppCollaboratorsWithPermissions,
-  orgFlags: orgFlags,
+  orgFeatures: orgFeatures,
   orgMembers: orgMembers,
   personalApp: personalApp,
   userFeatureFlags: userFeatureFlags,
