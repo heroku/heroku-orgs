@@ -18,7 +18,7 @@ function orgAppcollaborators (email = 'raulb@heroku.com', permissions = [], resp
   return nock('https://api.heroku.com:443', {
     reqheaders: {Accept: 'application/vnd.heroku+json; version=3'}
   })
-    .post('/organizations/apps/myapp/collaborators', body).reply(response.code, response.description)
+    .post('/organizations/apps/myapp/collaborators', body).reply(response.code || 200, response.description)
 }
 
 function personalToPersonal () {
