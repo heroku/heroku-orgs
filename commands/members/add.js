@@ -11,7 +11,8 @@ function * run (context, heroku) {
 
   const warnMembershipLimit = function * (totalMembers) {
     // Users receive `You'll be billed monthly for teams over 5 members.`
-    if (totalMembers === 6) {
+    const FREE_TEAM_LIMIT = 6
+    if (totalMembers === FREE_TEAM_LIMIT) {
       cli.warn("You'll be billed monthly for teams over 5 members.")
     }
   }
