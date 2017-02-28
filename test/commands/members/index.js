@@ -16,7 +16,7 @@ describe('heroku members', () => {
     })
 
     it('shows there are not org members if it is an orphan org', () => {
-      apiGetOrgMembers = stubGet.orgMembers([])
+      apiGetOrgMembers = stubGet.orgMembersWithAudit([])
       return cmd.run({org: 'myorg', flags: {}})
         .then(() => expect(
           `No members in myorg
@@ -26,25 +26,25 @@ describe('heroku members', () => {
     })
 
     it('shows all the org members', () => {
-      apiGetOrgMembers = stubGet.orgMembers([
-        {email: 'a@heroku.com', role: 'admin'}, {email: 'b@heroku.com', role: 'collaborator'}
+      apiGetOrgMembers = stubGet.orgMembersWithAudit([
+        {email: 'a@heroku.com', role: 'admin', last_login: '2017-02-28T03:36:19Z'}, {email: 'b@heroku.com', role: 'collaborator', last_login: '2017-02-28T03:36:19Z'}
       ])
       return cmd.run({org: 'myorg', flags: {}})
         .then(() => expect(
-          `a@heroku.com  admin
-b@heroku.com  collaborator
+          `a@heroku.com  admin         2017-02-28T03:36:19Z
+b@heroku.com  collaborator  2017-02-28T03:36:19Z
 `).to.eq(cli.stdout))
         .then(() => expect('').to.eq(cli.stderr))
         .then(() => apiGetOrgMembers.done())
     })
 
-    let expectedOrgMembers = [{email: 'a@heroku.com', role: 'admin'}, {email: 'b@heroku.com', role: 'member'}]
+    let expectedOrgMembers = [{email: 'a@heroku.com', role: 'admin', last_login: '2017-02-28T03:36:19Z'}, {email: 'b@heroku.com', role: 'member', last_login: '2017-02-28T03:36:19Z'}]
 
     it('filters members by role', () => {
-      apiGetOrgMembers = stubGet.orgMembers(expectedOrgMembers)
+      apiGetOrgMembers = stubGet.orgMembersWithAudit(expectedOrgMembers)
       return cmd.run({org: 'myorg', flags: {role: 'member'}})
         .then(() => expect(
-          `b@heroku.com  member
+          `b@heroku.com  member  2017-02-28T03:36:19Z
 `).to.eq(cli.stdout))
         .then(() => expect('').to.eq(cli.stderr))
         .then(() => apiGetOrgMembers.done())
@@ -64,7 +64,7 @@ b@heroku.com  collaborator
       apiGetOrgMembers = stubGet.orgMembers(expectedOrgMembers)
       return cmd.run({org: 'myorg', flags: {role: 'member'}})
         .then(() => expect(
-          `b@heroku.com  member
+          `b@heroku.com  member  2017-02-28T03:36:19Z
 `).to.eq(cli.stdout))
         .then(() => expect('').to.eq(cli.stderr))
         .then(() => apiGetOrgMembers.done())
@@ -84,12 +84,12 @@ b@heroku.com  collaborator
       context('using --org instead of --team', () => {
         it('shows members either way including a warning', () => {
           apiGetOrgMembers = stubGet.orgMembers([
-            {email: 'a@heroku.com', role: 'admin'}, {email: 'b@heroku.com', role: 'collaborator'}
+            {email: 'a@heroku.com', role: 'admin', last_login: '2017-02-28T03:36:19Z'}, {email: 'b@heroku.com', role: 'collaborator', last_login: '2017-02-28T03:36:19Z'}
           ])
           return cmd.run({org: 'myorg', flags: {}})
           .then(() => expect(
-            `a@heroku.com  admin
-b@heroku.com  collaborator\n`).to.eq(cli.stdout))
+            `a@heroku.com  admin         2017-02-28T03:36:19Z
+b@heroku.com  collaborator  2017-02-28T03:36:19Z\n`).to.eq(cli.stdout))
             .then(() => expect(' ▸    myorg is a Heroku Team\n ▸    Heroku CLI now supports Heroku Teams.\n ▸    Use -t or --team for teams like myorg\n').to.eq(cli.stderr))
             .then(() => apiGetOrgMembers.done())
         })
@@ -105,14 +105,14 @@ b@heroku.com  collaborator\n`).to.eq(cli.stdout))
         let apiGetTeamInvites = stubGet.teamInvites()
 
         apiGetOrgMembers = stubGet.orgMembers([
-          {email: 'a@heroku.com', role: 'admin'}, {email: 'b@heroku.com', role: 'collaborator'}
+          {email: 'a@heroku.com', role: 'admin', last_login: '2017-02-28T03:36:19Z'}, {email: 'b@heroku.com', role: 'collaborator', last_login: '2017-02-28T03:36:19Z'}
         ])
 
         return cmd.run({flags: {team: 'myorg'}})
           .then(() => expect(
-            `a@heroku.com           admin
-b@heroku.com           collaborator
-invited-user@mail.com  admin         pending
+            `a@heroku.com           admin         2017-02-28T03:36:19Z
+b@heroku.com           collaborator  2017-02-28T03:36:19Z
+invited-user@mail.com  admin                               pending
 `).to.eq(cli.stdout))
           .then(() => expect('').to.eq(cli.stderr))
           .then(() => apiGetTeamInvites.done())
@@ -123,12 +123,12 @@ invited-user@mail.com  admin         pending
         let apiGetTeamInvites = stubGet.teamInvites()
 
         apiGetOrgMembers = stubGet.orgMembers([
-          {email: 'a@heroku.com', role: 'admin'}, {email: 'b@heroku.com', role: 'collaborator'}
+          {email: 'a@heroku.com', role: 'admin', last_login: '2017-02-28T03:36:19Z'}, {email: 'b@heroku.com', role: 'collaborator', last_login: '2017-02-28T03:36:19Z'}
         ])
 
         return cmd.run({flags: {team: 'myorg', pending: true}})
           .then(() => expect(
-            `invited-user@mail.com  admin  pending
+            `invited-user@mail.com  admin              pending
 `).to.eq(cli.stdout))
           .then(() => expect('').to.eq(cli.stderr))
           .then(() => apiGetTeamInvites.done())

@@ -127,6 +127,33 @@ function orgMembers (members = [
     .reply(200, members)
 }
 
+function orgMembersWithAudit (members = [
+  {
+    email: 'raulb@heroku.com',
+    role: 'admin',
+    user: { email: 'raulb@heroku.com' },
+    last_login: '2017-02-28T03:36:19Z'
+  },
+  {
+    email: 'bob@heroku.com',
+    role: 'viewer',
+    user: { email: 'bob@heroku.com' },
+    last_login: '2017-02-28T03:36:19Z'
+  },
+  {
+    email: 'peter@heroku.com',
+    role: 'collaborator',
+    user: { email: 'peter@heroku.com' },
+    last_login: '2017-02-28T03:36:19Z'
+  }
+]) {
+  return nock('https://api.heroku.com:443', {
+    reqheaders: {Accept: 'application/vnd.heroku+json; version=3.audit'}
+  })
+    .get('/organizations/myorg/members')
+    .reply(200, members)
+}
+
 function personalApp () {
   return nock('https://api.heroku.com:443')
     .get('/apps/myapp')
@@ -187,6 +214,7 @@ module.exports = {
   orgFeatures,
   teamInvites,
   orgMembers,
+  orgMembersWithAudit,
   personalApp,
   userAccount,
   userFeatureFlags,
