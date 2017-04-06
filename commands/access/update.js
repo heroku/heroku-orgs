@@ -16,13 +16,13 @@ function * run (context, heroku) {
   let appInfo = yield heroku.get(`/apps/${appName}`)
 
   if (context.flags.privileges) cli.warn('DEPRECATION WARNING: use `--permissions` not `--privileges`')
-  if (!Utils.isOrgApp(appInfo.owner.email)) error.exit(1, `Error: cannot update permissions. The app ${cli.color.cyan(appName)} is not owned by an organization`)
+  if (!Utils.isTeamApp(appInfo.owner.email)) error.exit(1, `Error: cannot update permissions. The app ${cli.color.cyan(appName)} is not owned by a team`)
 
   // Give implicit `view` access
   permissions.push('view')
   permissions = _.uniq(permissions.sort())
 
-  let request = heroku.patch(`/organizations/apps/${appName}/collaborators/${context.args.email}`, {
+  let request = heroku.patch(`/teams/apps/${appName}/collaborators/${context.args.email}`, {
     body: { permissions: permissions }
   })
   yield cli.action(`Updating ${context.args.email} in application ${cli.color.cyan(appName)} with ${permissions} permissions`, request)
@@ -33,8 +33,8 @@ module.exports = {
   needsAuth: true,
   needsApp: true,
   command: 'update',
-  description: 'Update existing collaborators in an org app',
-  help: 'heroku access:update user@email.com --app APP --privileges deploy,manage,operate',
+  description: 'Update existing collaborators in an team app',
+  help: 'heroku access:update user@email.com --app APP --permissions deploy,manage,operate',
   args: [{name: 'email', optional: false}],
   flags: [
     { name: 'permissions', hasValue: true, description: 'comma-delimited list of permissions to update (deploy,manage,operate)' },

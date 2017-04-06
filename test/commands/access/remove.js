@@ -6,7 +6,7 @@ let stubDelete = require('../../stub/delete')
 let apiDelete
 
 describe('heroku access:remove', () => {
-  context('with either a personal or org app', () => {
+  context('with either a personal or team app', () => {
     beforeEach(() => {
       cli.mockConsole()
       apiDelete = stubDelete.collaboratorsPersonalApp('myapp', 'raulb@heroku.com')
