@@ -40,7 +40,7 @@ function * run (context, heroku) {
           heroku: heroku,
           appName: app.name,
           recipient: recipient,
-          personalToPersonal: Utils.isValidEmail(recipient) && !Utils.isOrgApp(app.owner),
+          personalToPersonal: Utils.isValidEmail(recipient) && !Utils.isTeamApp(app.owner),
           bulk: true
         })
         yield appTransfer.start()
@@ -51,8 +51,8 @@ function * run (context, heroku) {
   } else { // Single app transfer
     let appInfo = yield heroku.get(`/apps/${app}`)
 
-    // Shows warning when app is transferred from a team/org to a personal account
-    if (Utils.isValidEmail(recipient) && Utils.isOrgApp(appInfo.owner.email)) {
+    // Shows warning when app is transferred from a team to a personal account
+    if (Utils.isValidEmail(recipient) && Utils.isTeamApp(appInfo.owner.email)) {
       yield cli.confirmApp(app, context.flags.confirm, 'All collaborators will be removed from this app')
     }
 
@@ -60,7 +60,7 @@ function * run (context, heroku) {
       heroku: heroku,
       appName: appInfo.name,
       recipient: recipient,
-      personalToPersonal: Utils.isValidEmail(recipient) && !Utils.isOrgApp(appInfo.owner.email)
+      personalToPersonal: Utils.isValidEmail(recipient) && !Utils.isTeamApp(appInfo.owner.email)
     })
     yield appTransfer.start()
 
@@ -73,12 +73,12 @@ function * run (context, heroku) {
 let cmd = {
   topic: 'apps',
   command: 'transfer',
-  description: 'transfer applications to another user, organization or team',
+  description: 'transfer applications to another user or team',
   needsAuth: true,
   wantsApp: true,
   run: cli.command(co.wrap(run)),
   args: [
-    {name: 'recipient', description: 'user, organization or team to transfer applications to'}
+    {name: 'recipient', description: 'user or team to transfer applications to'}
   ],
   flags: [
     {name: 'locked', char: 'l', hasValue: false, required: false, description: 'lock the app upon transfer'},

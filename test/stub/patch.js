@@ -11,7 +11,7 @@ function appCollaboratorWithPermissions (args) {
 
 function teamAppTransfer () {
   return nock('https://api.heroku.com:443')
-    .patch('/teams/apps/myapp', { owner: 'team' })
+    .patch('/teams/apps/myapp', { owner: 'heroku-team' })
     .reply(200, { name: 'myapp', owner: { email: 'team@herokumanager.com' } })
 }
 

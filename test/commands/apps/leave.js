@@ -16,7 +16,7 @@ describe('heroku apps:leave', () => {
   })
   afterEach(() => nock.cleanAll())
 
-  context('when it is an org app', () => {
+  context('when it is a team app', () => {
     it('leaves the app', () => {
       return cmd.run({app: 'myapp'})
         .then(() => expect('').to.eq(cli.stdout))
@@ -27,7 +27,7 @@ describe('heroku apps:leave', () => {
     })
   })
 
-  context('when it is not an org app', () => {
+  context('when it is not a team app', () => {
     it('leaves the app', () => {
       return cmd.run({app: 'myapp'})
         .then(() => expect('').to.eq(cli.stdout))

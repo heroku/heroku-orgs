@@ -6,8 +6,8 @@ function apps () {
   return nock('https://api.heroku.com:443')
     .get('/apps')
     .reply(200, [
-      { name: 'my-team-app', owner: { email: 'team@herokumanager.com' } },
-      { name: 'my-org-app', owner: { email: 'organization@herokumanager.com' } },
+      { name: 'my-team-app', owner: { email: 'heroku-team@herokumanager.com' } },
+      { name: 'my-enterprise-app', owner: { email: 'enterprise-team@herokumanager.com' } },
       { name: 'myapp', owner: { email: 'foo@foo.com' } }
     ])
 }
