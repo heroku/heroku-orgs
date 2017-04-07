@@ -30,5 +30,6 @@ exports.commands = flatten([
   require('./commands/orgs'),
   require('./commands/orgs/default'),
   require('./commands/orgs/open'),
-  require('./commands/teams')
+  require('./commands/teams'),
+  require('./commands/teams/open')
 ])

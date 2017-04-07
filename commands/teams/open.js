@@ -14,6 +14,9 @@ module.exports = {
   command: 'open',
   description: 'open the team interface in a browser window',
   needsAuth: true,
-  needsOrg: true,
+  wantsTeam: true,
+  flags: [
+    {name: 'team', char: 't', hasValue: true, description: 'team to open'}
+  ],
   run: cli.command(co.wrap(run))
 }
