@@ -41,7 +41,7 @@ function teams (teams = [
 ]) {
   return nock('https://api.heroku.com:443')
     .get('/teams')
-    .reply(200, orgs)
+    .reply(200, teams)
 }
 
 function teamApp (locked = false) {
@@ -163,7 +163,7 @@ function variableSizeTeamInvites (teamSize) {
     .reply(200, invites)
 }
 
-function variableSizeOrgMembers (teamSize) {
+function variableSizeTeamMembers (teamSize) {
   teamSize = (typeof (teamSize) === 'undefined') ? 1 : teamSize
   let teamMembers = []
   for (let i = 0; i < teamSize; i++) {
@@ -172,8 +172,8 @@ function variableSizeOrgMembers (teamSize) {
       user: { email: `test${i}@heroku.com` }})
   }
   return nock('https://api.heroku.com:443')
-  .get('/teams/myorg/members')
-  .reply(200, orgMembers)
+  .get('/teams/myteam/members')
+  .reply(200, teamMembers)
 }
 
 module.exports = {
@@ -190,6 +190,6 @@ module.exports = {
   personalApp,
   userAccount,
   userFeatureFlags,
-  variableSizeOrgMembers,
+  variableSizeTeamMembers,
   variableSizeTeamInvites
 }

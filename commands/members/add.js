@@ -5,8 +5,8 @@ let co = require('co')
 let Utils = require('../../lib/utils')
 
 function * run (context, heroku) {
-  let orgInfo = yield Utils.orgInfo(context, heroku)
-  let groupName = context.org || context.flags.team
+  let teamInfo = yield Utils.teamInfo(context, heroku)
+  let groupName = context.flags.team || context.org
 
   // Users receive `You'll be billed monthly for teams over 5 members.`
   const warnMembershipLimit = function * (totalMembers) {
@@ -16,10 +16,10 @@ function * run (context, heroku) {
     }
   }
 
-  let addMemberToOrg = function * (email, role, groupName) {
+  let addMemberToTeam = function * (email, role, groupName) {
     let request = heroku.request({
       method: 'PUT',
-      path: `/organizations/${groupName}/members`,
+      path: `/teams/${groupName}/members`,
       body: {email, role}
     })
     yield cli.action(`Adding ${cli.color.cyan(email)} to ${cli.color.magenta(groupName)} as ${cli.color.green(role)}`, request)
@@ -31,7 +31,7 @@ function * run (context, heroku) {
         Accept: 'application/vnd.heroku+json; version=3.team-invitations'
       },
       method: 'PUT',
-      path: `/organizations/${groupName}/invitations`,
+      path: `/teams/${groupName}/invitations`,
       body: {email, role}
     }).then(request => {
       cli.action.done('email sent')
@@ -43,15 +43,15 @@ function * run (context, heroku) {
   let email = context.args.email
   let role = context.flags.role
 
-  let groupFeatures = yield heroku.get(`/organizations/${groupName}/features`)
+  let groupFeatures = yield heroku.get(`/teams/${groupName}/features`)
 
   if (groupFeatures.find(feature => { return feature.name === 'team-invite-acceptance' && feature.enabled })) {
     yield inviteMemberToTeam(email, role, groupName)
   } else {
-    yield addMemberToOrg(email, role, groupName)
+    yield addMemberToTeam(email, role, groupName)
   }
 
-  if (orgInfo.type === 'team') {
+  if (teamInfo.type === 'team') {
     let membersAndInvites = yield co(function * () {
       return yield {
         invites: heroku.request({
@@ -59,24 +59,24 @@ function * run (context, heroku) {
             Accept: 'application/vnd.heroku+json; version=3.team-invitations'
           },
           method: 'GET',
-          path: `/organizations/${groupName}/invitations`
+          path: `/teams/${groupName}/invitations`
         }),
-        members: heroku.get(`/organizations/${groupName}/members`)
+        members: heroku.get(`/teams/${groupName}/members`)
       }
     })
     const membersCount = membersAndInvites.invites.length + membersAndInvites.members.length
     yield warnMembershipLimit(membersCount)
   }
 
-  Utils.warnUsingOrgFlagInTeams(orgInfo, context)
+  Utils.warnUsingOrgFlagInTeams(teamInfo, context)
 }
 
 let add = {
   topic: 'members',
   command: 'add',
-  description: 'adds a user to an organization or a team',
+  description: 'adds a user to a team',
   needsAuth: true,
-  wantsOrg: true,
+  wantsTeam: true,
   args: [{name: 'email'}],
   flags: [
     {name: 'role', char: 'r', hasValue: true, required: true, description: 'member role (admin, collaborator, member, owner)'},
@@ -85,6 +85,6 @@ let add = {
   run: cli.command(co.wrap(run))
 }
 
-let set = Object.assign({}, add, {command: 'set', description: 'sets a members role in an organization or a team'})
+let set = Object.assign({}, add, {command: 'set', description: 'sets a members role in a team'})
 
 module.exports = [add, set]
