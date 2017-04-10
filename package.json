@@ -34,5 +34,10 @@
   },
   "scripts": {
     "test": "nyc mocha && standard"
-  }
+  },
+  "files": [
+    "index.js",
+    "commands",
+    "lib"
+  ]
 }
