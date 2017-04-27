@@ -14,6 +14,8 @@ exports.topics = [
   {name: 'unlock', hidden: true}
 ]
 
+const teams = require('./commands/teams');
+
 exports.commands = flatten([
   require('./commands/access'),
   require('./commands/access/add'),
@@ -27,9 +29,8 @@ exports.commands = flatten([
   require('./commands/members'),
   require('./commands/members/add'),
   require('./commands/members/remove'),
-  require('./commands/orgs'),
   require('./commands/orgs/default'),
-  require('./commands/orgs/open'),
-  require('./commands/teams'),
-  require('./commands/teams/open')
+  require('./commands/teams/open'),
+  teams.teams,
+  teams.orgs
 ])
