@@ -11,7 +11,7 @@ describe('heroku teams', () => {
   it('shows Heroku Teams', () => {
     let apiGetTeams = stubGet.teams()
 
-    return cmd.run({flags: {}})
+    return cmd.teams.run({command: cmd.teams, flags: {}})
       .then(() => expect(
         `org a   collaborator
 org b   admin

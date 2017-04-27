@@ -5,7 +5,7 @@ let co = require('co')
 let Utils = require('../../lib/utils')
 
 function * run (context, heroku) {
-  if (context.command.topic == 'orgs') {
+  if (context.command.topic === 'orgs') {
     cli.warn("orgs is deprecated. Please use 'teams' instead.")
   }
 
@@ -25,4 +25,4 @@ let cmd = {
 }
 
 exports.teams = Object.assign({}, cmd)
-exports.orgs  = Object.assign({}, cmd, {topic: 'orgs'}) // alias as 'orgs'
+exports.orgs = Object.assign({}, cmd, {topic: 'orgs'}) // alias as 'orgs'

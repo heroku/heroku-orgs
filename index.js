@@ -13,8 +13,8 @@ exports.topics = [
   {name: 'unlock', hidden: true}
 ]
 
-const teams = require('./commands/teams');
-const open  = require('./commands/teams/open');
+const teams = require('./commands/teams')
+const open = require('./commands/teams/open')
 
 exports.commands = flatten([
   require('./commands/access'),
