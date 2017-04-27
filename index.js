@@ -14,6 +14,7 @@ exports.topics = [
 ]
 
 const teams = require('./commands/teams');
+const open  = require('./commands/teams/open');
 
 exports.commands = flatten([
   require('./commands/access'),
@@ -31,5 +32,7 @@ exports.commands = flatten([
   require('./commands/orgs/default'),
   require('./commands/teams/open'),
   teams.teams,
-  teams.orgs
+  teams.orgs,
+  open.teams,
+  open.orgs
 ])
