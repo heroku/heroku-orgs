@@ -5,12 +5,16 @@ let co = require('co')
 let Utils = require('../../lib/utils')
 
 function * run (context, heroku) {
-  let orgs = yield heroku.get('/organizations')
-  let teams = orgs.filter(o => o.type === 'team')
+  if (context.command.topic === 'orgs') {
+    cli.warn("orgs is deprecated. Please use 'teams' instead.")
+  }
+
+  let teams = yield heroku.get('/teams')
   if (context.flags.json) Utils.printGroupsJSON(teams)
   else Utils.printGroups(teams, {label: 'Teams'})
 }
-module.exports = {
+
+let cmd = {
   topic: 'teams',
   description: 'list the teams that you are a member of',
   needsAuth: true,
@@ -19,3 +23,6 @@ module.exports = {
   ],
   run: cli.command(co.wrap(run))
 }
+
+exports.teams = Object.assign({}, cmd)
+exports.orgs = Object.assign({}, cmd, {topic: 'orgs', hidden: true}) // alias as 'orgs'

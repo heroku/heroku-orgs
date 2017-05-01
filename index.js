@@ -4,7 +4,6 @@ const flatten = require('lodash.flatten')
 
 exports.topics = [
   {name: 'access', description: 'manage user access to apps'},
-  {name: 'orgs', description: 'manage organizations'},
   {name: 'members', description: 'manage organization members'},
   {name: 'teams', description: 'manage teams'},
   {name: 'sharing', hidden: true},
@@ -13,6 +12,9 @@ exports.topics = [
   {name: 'lock', hidden: true},
   {name: 'unlock', hidden: true}
 ]
+
+const teams = require('./commands/teams')
+const open = require('./commands/teams/open')
 
 exports.commands = flatten([
   require('./commands/access'),
@@ -27,8 +29,10 @@ exports.commands = flatten([
   require('./commands/members'),
   require('./commands/members/add'),
   require('./commands/members/remove'),
-  require('./commands/orgs'),
   require('./commands/orgs/default'),
-  require('./commands/orgs/open'),
-  require('./commands/teams')
+  require('./commands/teams/open'),
+  teams.teams,
+  teams.orgs,
+  open.teams,
+  open.orgs
 ])
