@@ -25,4 +25,4 @@ let cmd = {
 }
 
 exports.teams = Object.assign({}, cmd)
-exports.orgs = Object.assign({}, cmd, {topic: 'orgs'}) // alias as 'orgs'
+exports.orgs = Object.assign({}, cmd, {topic: 'orgs', hidden: true}) // alias as 'orgs'
