@@ -2,6 +2,7 @@
 
 let cli = require('heroku-cli-util')
 let co = require('co')
+const {flags} = require('cli-engine-heroku')
 
 function * run (context, heroku) {
   let org = yield heroku.get(`/organizations/${context.org}`)
@@ -13,6 +14,9 @@ module.exports = {
   command: 'open',
   description: 'open the organization interface in a browser window',
   needsAuth: true,
-  needsOrg: true,
+  flags: [
+    flags.team({name: 'org', hasValue: true, description: 'org to use'}),
+    flags.team({name: 'team', required: true, hasValue: true, description: 'team to use', hidden: true})
+  ],
   run: cli.command(co.wrap(run))
 }
