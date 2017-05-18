@@ -62,8 +62,8 @@ module.exports = {
     {name: 'role', char: 'r', hasValue: true, description: 'filter by role'},
     {name: 'pending', hasValue: false, description: 'filter by pending team invitations'},
     {name: 'json', description: 'output in json format'},
-    flags.team({name: 'org', hasValue: true, description: 'org to use'}),
-    flags.team({name: 'team', hasValue: true, description: 'team to use', hidden: true})
+    flags.team({name: 'org', char: 'o', hasValue: true, description: 'org to use', required: true}),
+    flags.team({name: 'team', hasValue: true, hidden: true})
   ],
   run: cli.command(co.wrap(run))
 }
