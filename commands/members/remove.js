@@ -3,6 +3,7 @@
 let cli = require('heroku-cli-util')
 let co = require('co')
 let Utils = require('../../lib/utils')
+const {flags} = require('cli-engine-heroku')
 
 function * run (context, heroku) {
   let orgInfo = yield Utils.orgInfo(context, heroku)
@@ -61,10 +62,10 @@ module.exports = {
   command: 'remove',
   description: 'removes a user from an organization or a team',
   needsAuth: true,
-  wantsOrg: true,
   args: [{name: 'email'}],
   flags: [
-    {name: 'team', char: 't', hasValue: true, description: 'team to use'}
+    flags.team({name: 'org', hasValue: true, description: 'org to use'}),
+    flags.team({name: 'team', hasValue: true, description: 'team to use', hidden: true})
   ],
   run: cli.command(co.wrap(run))
 }

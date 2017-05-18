@@ -4,6 +4,7 @@ let _ = require('lodash')
 let cli = require('heroku-cli-util')
 let co = require('co')
 let Utils = require('../../lib/utils')
+const {flags} = require('cli-engine-heroku')
 
 function * run (context, heroku) {
   let orgInfo = yield Utils.orgInfo(context, heroku)
@@ -57,12 +58,12 @@ module.exports = {
   topic: 'members',
   description: 'list members of an organization or a team',
   needsAuth: true,
-  wantsOrg: true,
   flags: [
     {name: 'role', char: 'r', hasValue: true, description: 'filter by role'},
     {name: 'pending', hasValue: false, description: 'filter by pending team invitations'},
-    {name: 'team', char: 't', hasValue: true, description: 'team to use'},
-    {name: 'json', description: 'output in json format'}
+    {name: 'json', description: 'output in json format'},
+    flags.team({name: 'org', hasValue: true, description: 'org to use'}),
+    flags.team({name: 'team', hasValue: true, description: 'team to use', hidden: true})
   ],
   run: cli.command(co.wrap(run))
 }
