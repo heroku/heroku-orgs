@@ -15,8 +15,8 @@ module.exports = {
   description: 'open the organization interface in a browser window',
   needsAuth: true,
   flags: [
-    flags.team({name: 'org', char: 'o', hasValue: true, description: 'org to use', required: true}),
-    flags.team({name: 'team', hasValue: true, hidden: true})
+    flags.team({name: 'org', char: 'o', hasValue: true, description: 'org to use', hidden: true}),
+    flags.team({name: 'team', hasValue: true, required: true})
   ],
   run: cli.command(co.wrap(run))
 }

@@ -80,8 +80,8 @@ let add = {
   args: [{name: 'email'}],
   flags: [
     {name: 'role', char: 'r', hasValue: true, required: true, description: 'member role (admin, collaborator, member, owner)'},
-    flags.team({name: 'org', char: 'o', hasValue: true, description: 'org to use', required: true}),
-    flags.team({name: 'team', hasValue: true, hidden: true})
+    flags.team({name: 'org', char: 'o', hasValue: true, description: 'org to use', hidden: true}),
+    flags.team({name: 'team', hasValue: true})
   ],
   run: cli.command(co.wrap(run))
 }
