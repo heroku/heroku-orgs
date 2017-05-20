@@ -7,7 +7,7 @@ const {flags} = require('cli-engine-heroku')
 
 function * run (context, heroku) {
   let orgInfo = yield Utils.orgInfo(context, heroku)
-  let groupName = context.org || context.flags.team
+  let groupName = context.org || context.team || context.flags.team
 
   // Users receive `You'll be billed monthly for teams over 5 members.`
   const warnMembershipLimit = function * (totalMembers) {
@@ -80,8 +80,8 @@ let add = {
   args: [{name: 'email'}],
   flags: [
     {name: 'role', char: 'r', hasValue: true, required: true, description: 'member role (admin, collaborator, member, owner)'},
-    flags.team({name: 'org', char: 'o', hasValue: true, description: 'org to use', hidden: true}),
-    flags.team({name: 'team', hasValue: true})
+    flags.org({name: 'org', hasValue: true, description: 'org to use'}),
+    flags.team({name: 'team', hasValue: true, hidden: true})
   ],
   run: cli.command(co.wrap(run))
 }

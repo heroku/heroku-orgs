@@ -8,7 +8,7 @@ const {flags} = require('cli-engine-heroku')
 
 function * run (context, heroku) {
   let orgInfo = yield Utils.orgInfo(context, heroku)
-  let groupName = context.org || context.flags.team
+  let groupName = context.org || context.team || context.flags.team
   let teamInvites = []
 
   if (orgInfo.type === 'team') {
@@ -62,8 +62,8 @@ module.exports = {
     {name: 'role', char: 'r', hasValue: true, description: 'filter by role'},
     {name: 'pending', hasValue: false, description: 'filter by pending team invitations'},
     {name: 'json', description: 'output in json format'},
-    flags.team({name: 'org', char: 'o', hasValue: true, description: 'org to use', hidden: true}),
-    flags.team({name: 'team', hasValue: true})
+    flags.org({name: 'org', hasValue: true, description: 'org to use'}),
+    flags.team({name: 'team', hasValue: true, hidden: true})
   ],
   run: cli.command(co.wrap(run))
 }

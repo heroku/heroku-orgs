@@ -7,7 +7,7 @@ const {flags} = require('cli-engine-heroku')
 
 function * run (context, heroku) {
   let orgInfo = yield Utils.orgInfo(context, heroku)
-  let groupName = context.org || context.flags.team
+  let groupName = context.org || context.team || context.flags.team
   let teamInviteFeatureEnabled = false
   let isInvitedUser = false
   let email = context.args.email
@@ -64,7 +64,7 @@ module.exports = {
   needsAuth: true,
   args: [{name: 'email'}],
   flags: [
-    flags.team({name: 'org', char: 'o', hasValue: true, description: 'org to use', required: true}),
+    flags.org({name: 'org', hasValue: true, description: 'org to use'}),
     flags.team({name: 'team', hasValue: true, hidden: true})
   ],
   run: cli.command(co.wrap(run))
