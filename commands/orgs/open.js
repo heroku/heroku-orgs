@@ -5,7 +5,7 @@ let co = require('co')
 const {flags} = require('cli-engine-heroku')
 
 function * run (context, heroku) {
-  let org = yield heroku.get(`/organizations/${context.org || context.team}`)
+  let org = yield heroku.get(`/organizations/${context.org || context.team || context.flags.team}`)
   yield cli.open(`https://dashboard.heroku.com/orgs/${org.name}`)
 }
 
