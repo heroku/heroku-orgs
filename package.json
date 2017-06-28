@@ -1,12 +1,13 @@
 {
   "name": "heroku-orgs",
   "description": "CLI to manage Heroku Organizations",
-  "version": "1.5.12",
+  "version": "1.6.2",
   "author": "Raul Barroso @raulb",
   "bugs": {
     "url": "https://github.com/heroku/heroku-orgs/issues"
   },
   "dependencies": {
+    "cli-engine-heroku": "0.3.2",
     "co": "4.6.0",
     "heroku-cli-util": "6.1.17",
     "inquirer": "3.0.6",
