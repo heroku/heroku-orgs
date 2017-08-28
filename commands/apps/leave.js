@@ -20,7 +20,10 @@ let cmd = {
   description: 'remove yourself from an organization app',
   needsAuth: true,
   needsApp: true,
-  run: cli.command(co.wrap(run))
+  run: cli.command(co.wrap(run)),
+  help: `Example:
+
+    $ heroku apps:leave --app murmuring-headland-14719`
 }
 
 let root = Object.assign({}, cmd, {topic: 'leave', command: null})
