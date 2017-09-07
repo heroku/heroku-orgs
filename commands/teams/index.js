@@ -16,7 +16,7 @@ module.exports = {
   help: `Example:
 
     $ heroku teams:
-    devops  member`
+    devops  member`,
   needsAuth: true,
   flags: [
     {name: 'json', description: 'output in json format'}
