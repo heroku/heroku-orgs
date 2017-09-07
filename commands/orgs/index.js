@@ -35,5 +35,12 @@ module.exports = {
     {name: 'enterprise', hasValue: false, description: 'filter by enterprise orgs'},
     {name: 'teams', hasValue: false, description: 'filter by teams'}
   ],
-  run: cli.command(co.wrap(run))
+  run: cli.command(co.wrap(run)),
+  help: `Example:
+
+    $ heroku orgs
+    cli-ops                     member
+    heroku-team-1               collaborator
+    heroku-team-2               collaborator
+    heroku-team-                collaborator`
 }
