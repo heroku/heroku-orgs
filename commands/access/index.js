@@ -79,7 +79,7 @@ module.exports = [
     help: `Example:
 
     $ heroku access --app my-production-app1
-    $ someguy@example.com  owner`
+    someguy@example.com  owner`
   },
   {
     topic: 'sharing',
