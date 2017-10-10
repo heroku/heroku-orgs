@@ -27,23 +27,24 @@ function * run (context, heroku) {
     yield cli.action(`Adding ${cli.color.cyan(email)} to ${cli.color.magenta(groupName)} as ${cli.color.green(role)}`, request)
   }
 
-  let inviteMemberToTeam = function * (email, role, groupName) {
-    let request = heroku.request({
-      headers: {
-        Accept: 'application/vnd.heroku+json; version=3.team-invitations'
-      },
-      method: 'PUT',
-      path: `/organizations/${groupName}/invitations`,
-      body: {email, role}
-    }).then(request => {
+  let inviteMemberToTeam = async function (email, role, groupName) {
+    try {
+      yield heroku.request({
+        headers: {
+          Accept: 'application/vnd.heroku+json; version=3.team-invitations'
+        },
+        method: 'PUT',
+        path: `/organizations/${groupName}/invitations`,
+        body: {email, role}
+      })
       cli.action.done('email sent')
-    }).catch(function * (err) {
-      if (err.body.id === 'invalid_params') {
+    } catch (err) {
+      if (err.body.id === 'invalid_params' && err.body.message.match('user cannot be invited because they are already in')) {
         yield addMemberToOrg(email, role, groupName)
       } else {
         throw new Error(err.body.message)
       }
-    })
+    }
 
     yield cli.action(`Inviting ${cli.color.cyan(email)} to ${cli.color.magenta(groupName)} as ${cli.color.green(role)}`, request)
   }
