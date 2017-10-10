@@ -37,6 +37,12 @@ function * run (context, heroku) {
       body: {email, role}
     }).then(request => {
       cli.action.done('email sent')
+    }).catch(function (err) {
+      if (err.body.id === 'invalid_params') {
+        yield addMemberToOrg(email, role, groupName)
+      } else {
+        throw new Error(err.body.message)
+      }
     })
 
     yield cli.action(`Inviting ${cli.color.cyan(email)} to ${cli.color.magenta(groupName)} as ${cli.color.green(role)}`, request)
