@@ -24,12 +24,18 @@ function * run (context, heroku) {
         path: `/organizations/${groupName}/invitations`
       })
       teamInvites = _.map(teamInvites, function (invite) {
-        return {email: invite.user.email, role: invite.role, status: 'pending'}
+        return {email: invite.user.email, role: invite.role, last_login: '', status: 'pending'}
       })
     }
   }
 
-  let members = yield heroku.get(`/organizations/${groupName}/members`)
+  let members = yield heroku.request({
+    headers: {
+      Accept: 'application/vnd.heroku+json; version=3.audit'
+    },
+    method: 'GET',
+    path: `/organizations/${groupName}/members`
+  })
   // Set status '' to all existing members
   _.map(members, (member) => { member.status = '' })
   members = _.sortBy(_.union(members, teamInvites), 'email')
@@ -47,6 +53,7 @@ function * run (context, heroku) {
       columns: [
         {key: 'email', label: 'Email', format: e => cli.color.cyan(e)},
         {key: 'role', label: 'Role', format: r => cli.color.green(r)},
+        {key: 'last_login', label: 'Last Login', format: r => cli.color.green(r)},
         {key: 'status', label: 'Status', format: r => cli.color.green(r)}
       ]
     })
