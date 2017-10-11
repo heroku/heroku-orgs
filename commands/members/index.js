@@ -67,5 +67,8 @@ module.exports = {
     // flags.org({name: 'org', hasValue: true, description: 'org to use', hidden: false}),
     flags.team({name: 'team', hasValue: true, hidden: true})
   ],
-  run: cli.command(co.wrap(run))
+  run: cli.command(co.wrap(run)),
+  help: `Example:
+
+    $ heroku members --team heroku-cli-squad`
 }

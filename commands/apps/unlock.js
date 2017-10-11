@@ -23,7 +23,10 @@ let cmd = {
   description: 'unlock an app so any organization member can join',
   needsAuth: true,
   needsApp: true,
-  run: cli.command(co.wrap(run))
+  run: cli.command(co.wrap(run)),
+  help: `Example:
+
+    $ heroku apps:unlock --app murmuring-headland-14719`
 }
 
 let root = Object.assign({}, cmd, {topic: 'unlock', command: null})

@@ -13,6 +13,10 @@ function * run (context, heroku) {
 module.exports = {
   topic: 'teams',
   description: 'list the teams that you are a member of',
+  help: `Example:
+
+    $ heroku teams:
+    devops  member`,
   needsAuth: true,
   flags: [
     {name: 'json', description: 'output in json format'}

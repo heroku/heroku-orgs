@@ -85,7 +85,10 @@ let add = {
     // flags.org({name: 'org', hasValue: true, description: 'org to use', hidden: false}),
     flags.team({name: 'team', hasValue: true, hidden: true})
   ],
-  run: cli.command(co.wrap(run))
+  run: cli.command(co.wrap(run)),
+  help: `Example:
+
+    $ heroku members:add user@example.com --team heroku-cli-squad --role owner`
 }
 
 let set = Object.assign({}, add, {command: 'set', description: 'sets a members role in an organization or a team'})

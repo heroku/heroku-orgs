@@ -75,7 +75,11 @@ module.exports = [
     flags: [
       {name: 'json', description: 'output in json format'}
     ],
-    run: cli.command(co.wrap(run))
+    run: cli.command(co.wrap(run)),
+    help: `Example:
+
+    $ heroku access --app my-production-app1
+    someguy@example.com  owner`
   },
   {
     topic: 'sharing',
