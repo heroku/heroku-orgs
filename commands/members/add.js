@@ -28,7 +28,7 @@ function * run (context, heroku) {
     yield cli.action(`Inviting ${cli.color.cyan(email)} to ${cli.color.magenta(groupName)} as ${cli.color.green(role)}`, request)
   }
 
-  if (groupFeatures.find(feature => { return feature.name === 'team-invite-acceptance' && feature.enabled })) {
+  if (orgInfo.type === 'team' && groupFeatures.find(feature => { return feature.name === 'team-invite-acceptance' && feature.enabled })) {
     yield inviteMemberToTeam(email, role, groupName)
   } else {
     yield Utils.addMemberToOrg(email, role, groupName, heroku)
