@@ -3,7 +3,7 @@
 
 let cmd = require('../../../commands/members/set')
 let stubGet = require('../../stub/get')
-let stubPut = require('../../stub/put')
+let stubPatch = require('../../stub/patch')
 
 describe('heroku members:set', () => {
   let apiUpdateMemberRole
@@ -22,7 +22,7 @@ describe('heroku members:set', () => {
     it('does not warn the user when under the free org limit', () => {
       stubGet.variableSizeOrgMembers(1)
       stubGet.variableSizeTeamInvites(0)
-      apiUpdateMemberRole = stubPut.updateMemberRole('foo@foo.com', 'admin')
+      apiUpdateMemberRole = stubPatch.updateMemberRole('foo@foo.com', 'admin')
 
       return cmd.run({args: {email: 'foo@foo.com'}, flags: {role: 'admin', team: 'myorg'}})
       .then(() => expect('').to.eq(cli.stdout))
@@ -34,7 +34,7 @@ describe('heroku members:set', () => {
     it('does not warn the user when over the free org limit', () => {
       stubGet.variableSizeOrgMembers(7)
       stubGet.variableSizeTeamInvites(0)
-      apiUpdateMemberRole = stubPut.updateMemberRole('foo@foo.com', 'admin')
+      apiUpdateMemberRole = stubPatch.updateMemberRole('foo@foo.com', 'admin')
 
       return cmd.run({args: {email: 'foo@foo.com'}, flags: {role: 'admin', team: 'myorg'}})
       .then(() => expect('').to.eq(cli.stdout))
@@ -46,7 +46,7 @@ describe('heroku members:set', () => {
     it('does warn the user when at the free org limit', () => {
       stubGet.variableSizeOrgMembers(6)
       stubGet.variableSizeTeamInvites(0)
-      apiUpdateMemberRole = stubPut.updateMemberRole('foo@foo.com', 'admin')
+      apiUpdateMemberRole = stubPatch.updateMemberRole('foo@foo.com', 'admin')
 
       return cmd.run({args: {email: 'foo@foo.com'}, flags: {role: 'admin', team: 'myorg'}})
       .then(() => expect('').to.eq(cli.stdout))
@@ -60,7 +60,7 @@ describe('heroku members:set', () => {
         stubGet.variableSizeOrgMembers(1)
         stubGet.variableSizeTeamInvites(0)
 
-        apiUpdateMemberRole = stubPut.updateMemberRole('foo@foo.com', 'admin')
+        apiUpdateMemberRole = stubPatch.updateMemberRole('foo@foo.com', 'admin')
         return cmd.run({org: 'myorg', args: {email: 'foo@foo.com'}, flags: {role: 'admin'}})
         .then(() => expect('').to.eq(cli.stdout))
         .then(() => expect(`Adding foo@foo.com to myorg as admin... done
@@ -77,7 +77,7 @@ describe('heroku members:set', () => {
     })
 
     it('adds a member to an org', () => {
-      apiUpdateMemberRole = stubPut.updateMemberRole('foo@foo.com', 'admin')
+      apiUpdateMemberRole = stubPatch.updateMemberRole('foo@foo.com', 'admin')
 
       return cmd.run({org: 'myorg', args: {email: 'foo@foo.com'}, flags: {role: 'admin'}})
       .then(() => expect('').to.eq(cli.stdout))
